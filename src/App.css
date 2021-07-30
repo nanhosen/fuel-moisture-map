@@ -1,5 +1,6 @@
 .App {
   text-align: center;
+  background-color:'pink';
 }
 
 .App-logo {
@@ -21,7 +22,7 @@
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
-  color: white;
+  /*color: white;*/
 }
 
 .App-link {
@@ -35,4 +36,18 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+div.noPadding {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+div.noMargin {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+body{
+  background-color:'#232323';
 }

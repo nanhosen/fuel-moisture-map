@@ -2,13 +2,20 @@
   "name": "fuel-moisture-map",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://gacc.nifc.gov/gbcc/predictive/fuel-moisture-map",
   "dependencies": {
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
+    "axios": "^0.21.1",
+    "bootstrap": "5.0.2",
+    "mdbreact": "^5.1.0",
+    "ol": "^6.6.1",
     "react": "^17.0.2",
+    "react-bootstrap": "^2.0.0-beta.4",
     "react-dom": "^17.0.2",
     "react-scripts": "4.0.3",
+    "styled-components": "^5.3.0",
     "web-vitals": "^1.0.1"
   },
   "scripts": {
