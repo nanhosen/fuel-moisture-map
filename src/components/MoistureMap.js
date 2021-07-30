@@ -3,7 +3,6 @@ import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer.js'
 import XYZ from 'ol/source/XYZ'
 import VectorSource from 'ol/source/Vector.js'
 import GeoJSON from 'ol/format/GeoJSON';
-import { Container } from 'react-bootstrap';
 import View from 'ol/View';
 import Map from 'ol/Map';
 import '../App.css'
@@ -136,10 +135,12 @@ function MoistureMap(props){
   }, [])
 
   return (
-    <Container fluid style={{ height: `${props.height}px` }} className="noPadding">
+    // <Container fluid style={{ height: `${props.height}px` }} className="noPadding">
+    <>
       <div id="map" ref={mapContainer} style={{ height: `${props.height}px`}}>
-        <div className="absBotRight"></div> </div>
-    </Container>
+      </div>
+    </>
+    // </Container>
   )
 }
 

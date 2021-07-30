@@ -1,5 +1,4 @@
 import { Suspense, lazy, useRef, useEffect, useState, useCallback, useContext } from 'react';
-import MoistureMap from './MoistureMap.js'
 import Card from 'react-bootstrap/Card'
 import Tabs from 'react-bootstrap/Tabs'
 import Tab from 'react-bootstrap/Tab'
@@ -10,10 +9,12 @@ import Accordion from 'react-bootstrap/Accordion'
 import '../App.css'
 import { MoistureContext } from '../contexts/MoistureContext'
 import MapOptions from './DropdownMapOptions'
+import { MDBRow, MDBCol, MDBCard, MDBCardBody,  MDBListGroup, MDBListGroupItem, MDBCardTitle } from "mdbreact";
+// import MoistureMap from './MoistureMap.js'
 const Container = lazy(() => import('react-bootstrap/Container'))
 // const Nav = lazy(() => import('react-bootstrap/Nav'))
 const InfoComponent = lazy(()=>import('./InfoComponent'))
-// const MoistureMap = lazy(() => import('./Components/MoistureMap'))
+const MoistureMap = lazy(() => import('./MoistureMap'))
 const Row = lazy(() => import('react-bootstrap/Row'))
 const Col = lazy(() => import('react-bootstrap/Col'))
 
@@ -37,38 +38,39 @@ function Main(props) {
   return (
     <div className="h-100 App" style={{ width: '100%', height: '100%' }}>
       <Suspense fallback={<div>Loading...</div>}>
-        <Container fluid >
-          <Row >
-            <Col md={6}  ref={colRef} >
+          <MDBRow >
+            <MDBCol  md={6}  ref={colRef} >
 
-              <Card>
+              <MDBCard>
 
-              <Card.Body>
+              {/*<MDBCardBody>*/}
               <MapOptions />
                   <MoistureMap height={windowHeight}  className="h-100" />
-                  </Card.Body>
-              </Card>
-            </Col>
-            <Col md={6}> 
-              <Card>
-                <Card.Body>
+                  {/*</MDBCardBody>*/}
+              </MDBCard>
+            </MDBCol >
+            <MDBCol  md={6}> 
+              <MDBCard>
+                <MDBCardBody>
                   <Suspense fallback={<div>Loading...</div>}>
                     {(() => {
                       if (context.selection) {
                         return <InfoComponent />
                       } else {
-                        return <><ListGroup className="list-group-flush">
-                          <ListGroupItem>Click Station on Map to View Fuel Images and Information</ListGroupItem>
-                          <ListGroupItem>Zoom in to See Station Names. </ListGroupItem>
-                        </ListGroup></>;
+                        return (
+                          <>
+                            <MDBCardTitle>Click Station on Map to View Fuel Images and Information</MDBCardTitle>
+                            <hr />
+                            <MDBCardTitle>Zoom in to see Station Names.</MDBCardTitle>
+                          </>
+                        )
                       }
                     })()}
                   </Suspense>
-                </Card.Body>
-              </Card>
-            </Col>
-          </Row>
-        </Container>
+                </MDBCardBody>
+              </MDBCard>
+            </MDBCol >
+          </MDBRow>
       </Suspense>
     </div>
   );

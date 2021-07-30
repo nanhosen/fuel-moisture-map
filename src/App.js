@@ -1,6 +1,8 @@
 import  { Suspense, lazy, useEffect, useState } from 'react';
 import './App.css';
-const Container = lazy(() => import('react-bootstrap/Container'))
+// const Container = lazy(() => import('react-bootstrap/Container'))
+import { MDBContainer } from "mdbreact";
+
 const Navbar = lazy(() => import('./components/Navbar'))
 const Main = lazy(() => import('./components/Main'))
 const MoistureProvider = lazy(() => import('./providers/MoistureProvider'))
@@ -39,10 +41,10 @@ function App() {
       <Suspense fallback={<div>Loading...</div>}>
         <MoistureProvider>
           {/*<Container fluid>*/}
-          <Container fluid style={{paddingLeft: '0px', paddingRight:'0px'}}>
+          <MDBContainer fluid style={{paddingLeft: '0px', paddingRight:'0px'}}>
             <Navbar />
             <Main height = {height} width={width}/>
-          </Container>
+          </MDBContainer>
         </MoistureProvider>
       </Suspense>
     </div>
