@@ -1,7 +1,7 @@
 import  { Suspense, lazy, useEffect, useState } from 'react';
 import './App.css';
 // const Container = lazy(() => import('react-bootstrap/Container'))
-import { MDBContainer } from "mdbreact";
+import { MDBContainer } from "mdb-react-ui-kit";
 
 const Navbar = lazy(() => import('./components/Navbar'))
 const Main = lazy(() => import('./components/Main'))

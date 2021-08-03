@@ -6,6 +6,34 @@ import { MoistureContext } from '../contexts/MoistureContext'
 import Card from 'react-bootstrap/Card'
 import Form from 'react-bootstrap/Form'
 import { useAccordionButton } from 'react-bootstrap/AccordionButton';
+import { MDBAccordion, MDBAccordionItem } from 'mdb-react-ui-kit';
+import TextField from '@material-ui/core/TextField';
+import Autocomplete from '@material-ui/core/Autocomplete';
+import { styled, useTheme } from '@material-ui/core/styles';
+import Box from '@material-ui/core/Box';
+import MuiDrawer from '@material-ui/core/Drawer';
+import MuiAppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import List from '@material-ui/core/List';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import Typography from '@material-ui/core/Typography';
+import Divider from '@material-ui/core/Divider';
+import IconButton from '@material-ui/core/IconButton';
+import MenuIcon from '@material-ui/icons/Menu';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import InboxIcon from '@material-ui/icons/MoveToInbox';
+import MailIcon from '@material-ui/icons/Mail';
+
+
+
+///okay, material UI is way better. Thinking will do persistent drawer on left hand side of page. Can click to expand and will have accordion with tabs for filter by 
+//station and filter by fuel type. Instead of radio buttons will be text box with autocomplete. Would be cool to have multiople checkboxes on autocomplete thing so that coul
+//see multiople stations or muliople fuel types. can also have a color by whatever thing for when I get live data in. 
+
 
 const fuelTypes = [
   'Sagebrush-Mountain Big',
@@ -85,26 +113,45 @@ function CustomToggle({ children, eventKey }) {
 }
 
 function Example() {
+  const [collapseId, setCollapseId] = useState()
+  const [isClosed, setIsClosed] = useState(true)
+  const [showNav, setShowNav] = useState(false);
+
+  useEffect(() =>{
+    console.log('isClosed', isClosed)
+    if(isClosed){
+      setCollapseId('')
+    }
+    else(
+      setCollapseId('navbarCollapse1')
+     )
+  },[isClosed])
+
+  useEffect(() =>{
+    console.log('collapseId', collapseId)
+  },[collapseId])
+
+  const toggle = useCallback(() => {
+    console.log('toggle')
+    setIsClosed(v => !v);
+  }, []);
   // const context = useContext(MoistureContext)
   // useEffect(()=>{
 
   // console.log('this context', context)
   // },[context])
   return (
-    <Accordion>
-      <Card>
-        <Card.Header>
-          <CustomToggle eventKey="0">Customize Map (Click To Expand)
-          </CustomToggle>
-        </Card.Header>
-        <Accordion.Collapse eventKey="0">
-          <Card.Body>
-            <FormPart />
-          </Card.Body>
-        </Accordion.Collapse>
-      </Card>
-
-    </Accordion>
+     // <MDBContainer>
+    <MDBAccordion flush >
+      <MDBAccordionItem collapseId='flush-collapse1' headerTitle='Filter Stations By Fuel Type'>
+        <FormPart />
+      </MDBAccordionItem>
+      <MDBAccordionItem collapseId='flush-collapse2' headerTitle='Filter Stations Station Name'>
+        <NameFilter />
+      </MDBAccordionItem>
+      
+    </MDBAccordion>
+        // </MDBContainer>
   );
 }
 
@@ -113,6 +160,21 @@ export default function MapOptions(){
   return(<><Example /></>);
 }
 
+function NameFilter(){
+   return(
+            <Form>
+               <Autocomplete
+                  disablePortal
+                  id="combo-box-demo"
+                  options={['The Godfather', 'Pulp Fiction']}
+                  sx={{ width: 300 }}
+                  renderInput={(params) => <TextField {...params} label="Movie" />}
+                />
+             </Form>  
+
+   )
+
+}
 
 function FormPart(){
     const context = useContext(MoistureContext)
@@ -127,6 +189,7 @@ function FormPart(){
    return(
            <Form.Check
             inline
+            key={i}
             label={fuelType}
             name="group1"
             type={'radio'}
@@ -138,6 +201,7 @@ function FormPart(){
   return(
             <Form>
                {innerThings}
+
              </Form>  
 
    )

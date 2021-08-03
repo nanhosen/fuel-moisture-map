@@ -9,12 +9,13 @@ import Accordion from 'react-bootstrap/Accordion'
 import '../App.css'
 import { MoistureContext } from '../contexts/MoistureContext'
 import MapOptions from './DropdownMapOptions'
-import { MDBRow, MDBCol, MDBCard, MDBCardBody,  MDBListGroup, MDBListGroupItem, MDBCardTitle } from "mdbreact";
+import { MDBRow, MDBCol, MDBCard, MDBCardBody,  MDBListGroup, MDBListGroupItem, MDBCardTitle, MDBCardText } from "mdb-react-ui-kit";
 // import MoistureMap from './MoistureMap.js'
 const Container = lazy(() => import('react-bootstrap/Container'))
 // const Nav = lazy(() => import('react-bootstrap/Nav'))
 const InfoComponent = lazy(()=>import('./InfoComponent'))
 const MoistureMap = lazy(() => import('./MoistureMap'))
+const LeftDrawer = lazy(() => import('./LeftDrawer'))
 const Row = lazy(() => import('react-bootstrap/Row'))
 const Col = lazy(() => import('react-bootstrap/Col'))
 
@@ -39,13 +40,16 @@ function Main(props) {
     <div className="h-100 App" style={{ width: '100%', height: '100%' }}>
       <Suspense fallback={<div>Loading...</div>}>
           <MDBRow >
+          <MDBCol md={6} >vb
+          </MDBCol>
             <MDBCol  md={6}  ref={colRef} >
 
               <MDBCard>
 
               {/*<MDBCardBody>*/}
               <MapOptions />
-                  <MoistureMap height={windowHeight}  className="h-100" />
+              {/*<LeftDrawer />*/}
+                  <MoistureMap height={windowHeight}  className="h-100"></MoistureMap>
                   {/*</MDBCardBody>*/}
               </MDBCard>
             </MDBCol >
@@ -59,9 +63,9 @@ function Main(props) {
                       } else {
                         return (
                           <>
-                            <MDBCardTitle>Click Station on Map to View Fuel Images and Information</MDBCardTitle>
+                            <MDBCardText>Click Station on Map to View Fuel Images and Information</MDBCardText>
                             <hr />
-                            <MDBCardTitle>Zoom in to see Station Names.</MDBCardTitle>
+                            <MDBCardText>Zoom in to see Station Names.</MDBCardText>
                           </>
                         )
                       }

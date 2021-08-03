@@ -11,6 +11,9 @@ import returnColor from '../utils/colorBySelectedFuel'
 
 import { MoistureContext } from '../contexts/MoistureContext'
 import { Circle as CircleStyle, Fill, Stroke, Style, Icon, Text } from 'ol/style.js'
+
+import LayerSwitcher from 'ol-layerswitcher';
+import { BaseLayerOptions, GroupLayerOptions } from 'ol-layerswitcher';
 // const Map = lazy(() => import('ol/Map'))
 // const View = lazy(() => import('ol/View'))
 
@@ -21,6 +24,11 @@ var mapboxLayer = new TileLayer({
     // url: 'https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibmFuaG9zZW4iLCJhIjoiY2ppZGExdDZsMDloNzN3cGVoMjZ0NHR5YyJ9.RYsPZGmajXULk-WtqvBNpQ'
   })
 })
+
+const layerSwitcher = new LayerSwitcher({
+  reverse: true,
+  groupSelectStyle: 'group'
+});
 
 function makeGeoJsonLayer(data, displayFuel, id) {
   // if (!data) {
@@ -129,6 +137,7 @@ function MoistureMap(props){
         context.setSelection(names && names.length>0 ? names : null)
       }
     })
+    olMap.addControl(layerSwitcher)
 
     
 

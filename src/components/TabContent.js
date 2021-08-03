@@ -8,6 +8,7 @@ import Card from 'react-bootstrap/Card'
 import Accordion from 'react-bootstrap/Accordion'
 import ListGroup from 'react-bootstrap/ListGroup'
 import Button from 'react-bootstrap/Button'
+import { MDBBtn } from 'mdb-react-ui-kit';
 
 
 export default function TabContent(props){
@@ -46,7 +47,7 @@ export default function TabContent(props){
 
 	return(
 		<>	
-		{linkUrl && <Button href= {`http://www.wfas.net/nfmd/add_data/add_site_data.php?gacc=${linkInfo.gacc}&state=${linkInfo.state}&grup=${linkInfo.grup.replace(/ /g, '%20')}&site=${props.station.replace(/ /g, '%20')}`} target="blank" variant="outline-dark">Update Station Data</Button>}
+		{linkUrl && <MDBBtn href= {`http://www.wfas.net/nfmd/add_data/add_site_data.php?gacc=${linkInfo.gacc}&state=${linkInfo.state}&grup=${linkInfo.grup.replace(/ /g, '%20')}&site=${props.station.replace(/ /g, '%20')}`} target="blank" className='mx-2' color='dark'>Update Station Data</MDBBtn>}
 		{
 			fullSiteMetadata[props.station] && <MakeAccordion fuels={fullSiteMetadata[props.station].fuels} />
 		}

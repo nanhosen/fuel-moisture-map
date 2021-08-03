@@ -4,6 +4,17 @@ import React, { useState, useEffect } from 'react'
 import { MoistureContext } from '../contexts/MoistureContext'
 import axios from 'axios'
 import {stnFuels} from '../data/fuelTypes'
+import { ThemeProvider, StyledEngineProvider, createTheme } from '@material-ui/core/styles';
+
+import makeStyles from '@material-ui/styles/makeStyles';
+
+// const theme = createTheme();
+
+// const useStyles = makeStyles((theme) => {
+//   root: {
+//     // some css that access to theme
+//   }
+// });
 
 export default function MapProvider({ children }) {
   const [map, setMap] = useState()
@@ -12,6 +23,9 @@ export default function MapProvider({ children }) {
   const [selection, setSelection] = useState()
   const [displayFuel, setDisplayFuel] = useState('All')
   const [pointLayer, setPointLayer] = useState()
+
+  // const classes = useStyles(); // ❌ If you have this, consider moving <ThemeProvider> to HOC and wrap the App
+
   // const [activeContent, setActiveContent] = useState('aqMap') 
   // const [activeContent, setActiveContent] = useState('nrSfc') 
 
@@ -131,7 +145,12 @@ export default function MapProvider({ children }) {
   }, []); // Empty array ensures that effect is only run on mount
   return (
     <MoistureContext.Provider value={{ map, setMap, windowHeight, dataPoints, selection, setSelection, stnFuels, displayFuel, setDisplayFuel, pointLayer, setPointLayer}}>
-      {children}
+          {children}
     </MoistureContext.Provider>
-  )
+  );
 }
+
+
+
+
+
