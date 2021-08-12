@@ -1,11 +1,33 @@
-import  { Suspense, lazy, useEffect, useState } from 'react';
+import  { Suspense, lazy, useEffect, useState } from 'react'; 
 import './App.css';
 // const Container = lazy(() => import('react-bootstrap/Container'))
-import { MDBContainer } from "mdb-react-ui-kit";
+import { Container } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import { purple, red } from '@material-ui/core/colors';
+import { createTheme, ThemeProvider } from '@material-ui/core/styles';
 
 const Navbar = lazy(() => import('./components/Navbar'))
 const Main = lazy(() => import('./components/Main'))
 const MoistureProvider = lazy(() => import('./providers/MoistureProvider'))
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      // Purple and green play nicely together.
+      main: red[900],
+      legend:'orange'
+    },
+    secondary: {
+      // This is green.A700 as hex.
+      main: '#11cb5f', 
+    },
+    neutral: {
+      main: '#64748B',
+      contrastText: '#fff',
+    },
+  },
+});
+
 // import Main from './components/Main'
 
 // import { Nav } from 'react-bootstrap';
@@ -17,7 +39,7 @@ const MoistureProvider = lazy(() => import('./providers/MoistureProvider'))
 
 function App() {
   const [width, setWidth] = useState(window.innerWidth)
-  const [height, setHeight] = useState(window.innerHeight - 55)
+  const [height, setHeight] = useState(window.innerHeight - 160)
 
   useEffect(() => {
     // console.log('height', height, width)
@@ -40,11 +62,13 @@ function App() {
     <div className="h-100 App" style={{ width: '100%', height: '100%', backgroundColor:'#F5F5F5' }}>
       <Suspense fallback={<div>Loading...</div>}>
         <MoistureProvider>
+        <ThemeProvider theme={theme}>
           {/*<Container fluid>*/}
-          <MDBContainer fluid style={{paddingLeft: '0px', paddingRight:'0px'}}>
+          <Container maxWidth={false}>
             <Navbar />
-            <Main height = {height} width={width}/>
-          </MDBContainer>
+            <Box sx={{pt:'10px'}}><Main height = {height} width={width}/></Box>
+          </Container>
+        </ThemeProvider>
         </MoistureProvider>
       </Suspense>
     </div>
@@ -52,5 +76,7 @@ function App() {
 }
 
 export default App;
+
+// <Main height = {height} width={width}/>
       // <Jumb />
       // <Header />

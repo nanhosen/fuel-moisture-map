@@ -1,7 +1,9 @@
-import { Suspense, lazy, useRef, useEffect, useState, useCallback, useContext } from 'react';
+import { useEffect, useContext } from 'react';
 import { MoistureContext } from '../contexts/MoistureContext'
 import MakeTabs from './MakeTabs'
-import {stnFuels} from '../data/fuelTypes'
+import { withStyles, makeStyles } from '@material-ui/core/styles';
+
+// import {stnFuels} from '../data/fuelTypes'
 function InfoComponent(props){
 	const context = useContext(MoistureContext)
 	// console.log('stnFuels', props, stnFuels)

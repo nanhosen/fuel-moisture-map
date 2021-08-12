@@ -67,7 +67,7 @@ export default function createTextStyle(feature, resolution) {
 	// const font = weight + ' ' + size + '/' + height + ' ' + fontName;
   return new Text({
     textAlign: 'end',
-    text: resolution < 1800 ? feature.get('name') : '',
+    text: resolution < 2000 ? feature.get('name') : '',
     stroke: new Stroke({color: 'white', width: 2}),
     // font: font,
     offsetX: -10,

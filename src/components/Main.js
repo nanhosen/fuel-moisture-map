@@ -1,86 +1,176 @@
-import { Suspense, lazy, useRef, useEffect, useState, useCallback, useContext } from 'react';
-import Card from 'react-bootstrap/Card'
-import Tabs from 'react-bootstrap/Tabs'
-import Tab from 'react-bootstrap/Tab'
-import Form from 'react-bootstrap/Form'
-import ListGroup from 'react-bootstrap/ListGroup'
-import ListGroupItem from 'react-bootstrap/ListGroupItem'
-import Accordion from 'react-bootstrap/Accordion'
+import { Suspense, lazy, useRef,  useState, useContext, useEffect } from 'react';
+// import Card from 'react-bootstrap/Card'
+// import Tabs from 'react-bootstrap/Tabs'
+// import Tab from 'react-bootstrap/Tab'
+// import Form from 'react-bootstrap/Form'
+// import ListGroup from 'react-bootstrap/ListGroup'
+// import ListGroupItem from 'react-bootstrap/ListGroupItem'
+// import Accordion from 'react-bootstrap/Accordion'
 import '../App.css'
 import { MoistureContext } from '../contexts/MoistureContext'
 import MapOptions from './DropdownMapOptions'
-import { MDBRow, MDBCol, MDBCard, MDBCardBody,  MDBListGroup, MDBListGroupItem, MDBCardTitle, MDBCardText } from "mdb-react-ui-kit";
+import Legend from './Legend'
+import { MDBRow, MDBCol, MDBCard, MDBCardBody,  MDBCardText, MDBContainer } from "mdb-react-ui-kit";
+import {Box, Grid, Paper, Card, Typography, CardContent} from '@material-ui/core';
 // import MoistureMap from './MoistureMap.js'
+// import Drawer from '@material-ui/core/Drawer';
+// import Button from '@material-ui/core/Button';
+// import Slide from '@material-ui/core/Slide';
+// import { styled, useTheme } from '@material-ui/core/styles';
 const Container = lazy(() => import('react-bootstrap/Container'))
 // const Nav = lazy(() => import('react-bootstrap/Nav'))
 const InfoComponent = lazy(()=>import('./InfoComponent'))
 const MoistureMap = lazy(() => import('./MoistureMap'))
-const LeftDrawer = lazy(() => import('./LeftDrawer'))
-const Row = lazy(() => import('react-bootstrap/Row'))
-const Col = lazy(() => import('react-bootstrap/Col'))
+// const LeftDrawer = lazy(() => import('./LeftDrawer'))
+// const Row = lazy(() => import('react-bootstrap/Row'))
+// const Col = lazy(() => import('react-bootstrap/Col'))
+
+// const drawerWidth = 240;
 
 
 function Main(props) {
   const windowHeight = props.height
   const colRef = useRef(null)
-  const [width, setWidth] = useState()
+  // const [width, setWidth] = useState()
   const context = useContext(MoistureContext)
 
   useEffect(()=>{
-    if(colRef.current?.clientWidth){
-      setWidth(colRef.current.clientWidth)
-    }
-  },[props])
+    // console.log('fuelValFilterObj', context.fuelValFilterObj, )
+  },[context.fuelValFilterObj])
 
-  useEffect(()=>{
-    // console.log('main context', context, !context.selection)
-  },[context])
+  // const [isOpen, setIsOpen] = useState(true);
+  // const [drawerWidth, setDrawerWidth] = useState(0.1)
+  // const [maxWidth, setMaxWidth] = useState(5)
+// 
+  // const toggle = () => {
+  //   setIsOpen(!isOpen);
+  // }
+
+  // useEffect(()=>{
+  //   setMaxWidth(isOpen ? 10 : 5)
+  //   setDrawerWidth(isOpen ? 20 : 1)
+  // },[isOpen])
+
+  // useEffect(()=>{
+  //   if(colRef.current?.clientWidth){
+  //     setWidth(colRef.current.clientWidth)
+  //   }
+  // },[props])
+
+  // useEffect(()=>{
+  //   // console.log('main context', context, !context.selection)
+  // },[context])
 
   return (
     <div className="h-100 App" style={{ width: '100%', height: '100%' }}>
       <Suspense fallback={<div>Loading...</div>}>
-          <MDBRow >
-          <MDBCol md={6} >vb
-          </MDBCol>
-            <MDBCol  md={6}  ref={colRef} >
+        <Box fluid  >
+          <Grid container spacing={1} >
+            <Grid item md={6}  ref={colRef}>
+              <Paper ref={colRef}>
 
-              <MDBCard>
+                {/*<MDBCardBody>*/}
+                <MapOptions />
 
-              {/*<MDBCardBody>*/}
-              <MapOptions />
-              {/*<LeftDrawer />*/}
-                  <MoistureMap height={windowHeight}  className="h-100"></MoistureMap>
-                  {/*</MDBCardBody>*/}
-              </MDBCard>
-            </MDBCol >
-            <MDBCol  md={6}> 
-              <MDBCard>
-                <MDBCardBody>
-                  <Suspense fallback={<div>Loading...</div>}>
-                    {(() => {
-                      if (context.selection) {
-                        return <InfoComponent />
-                      } else {
-                        return (
-                          <>
-                            <MDBCardText>Click Station on Map to View Fuel Images and Information</MDBCardText>
-                            <hr />
-                            <MDBCardText>Zoom in to see Station Names.</MDBCardText>
-                          </>
-                        )
-                      }
-                    })()}
-                  </Suspense>
-                </MDBCardBody>
-              </MDBCard>
-            </MDBCol >
-          </MDBRow>
+                <MoistureMap height={windowHeight}  width={props.width} className="h-100"></MoistureMap>
+                {context.fuelValFilterObj && <Box sx={{position:'relative', bottom:'0px'}}><Legend  /></Box>}
+                
+                {/*</MDBCardBody>*/}
+              </Paper>
+            </Grid>
+            <Grid item md={6}>
+              <Paper>
+                    <Suspense fallback={<div>Loading...</div>}>
+                      {(() => {
+                        if (context.selection) {
+                          return <InfoComponent />
+                        } else {
+                          return (
+                            <>
+                              <Card>
+                                <CardContent>
+                                <Typography sx={{ fontSize: 16 }}>
+                                  Click Station on Map to View Fuel Images and Information
+                                </Typography>
+                                <hr />
+                                <Typography sx={{ fontSize: 16 }}>
+                                  Zoom in to see Station Names.
+                                </Typography>
+                                </CardContent>
+                              </Card>
+                            </>
+                          )
+                        }
+                      })()}
+                    </Suspense>
+                </Paper>
+              </Grid>   
+          </Grid>
+        </Box>      
       </Suspense>
     </div>
   );
 }
 
 export default Main;
+
+//   return (
+//     <div className="h-100 App" style={{ width: '100%', height: '100%' }}>
+//       <Suspense fallback={<div>Loading...</div>}>
+//         <div className="d-flex bd-highlight example-parent">
+//         <div className="p-2 flex-fill bd-highlight col-example" style={{minWidth:`1em`, maxWidth:`${maxWidth}em`}}>
+//           <MDBCard  m={0}>
+//             <Slide direction="right" in={true} mountOnEnter unmountOnExit>
+//               <div className={'hum'}>
+//                   side here
+//               </div>
+//             </Slide>
+//           </MDBCard>
+//         </div>
+//         <div className="p-2 flex-fill bd-highlight col-example" style={{maxWidth:'50em'}}>
+//               <MDBCard>
+
+//               {/*<MDBCardBody>*/}
+//               <MapOptions />
+//               // <Button variant="contained" color="primary" onClick={toggle}>Toggle</Button>
+//               {/*<LeftDrawer />*/}
+//               <Slide direction="right" in={isOpen} mountOnEnter unmountOnExit>
+//       <div className={'hum'}>
+//         side here
+//       </div>
+//     </Slide>
+//                   <MoistureMap height={windowHeight}  className="h-100"></MoistureMap>
+//                   {/*</MDBCardBody>*/}
+//               </MDBCard>
+//           </div>
+//           <div className="p-2 flex-fill bd-highlight col-example" style={{maxWidth:'50em'}}>     
+//               <MDBCard>
+//                 <MDBCardBody>
+//                   <Suspense fallback={<div>Loading...</div>}>
+//                     {(() => {
+//                       if (context.selection) {
+//                         return <InfoComponent />
+//                       } else {
+//                         return (
+//                           <>
+//                             <MDBCardText>Click Station on Map to View Fuel Images and Information</MDBCardText>
+//                             <hr />
+//                             <MDBCardText>Zoom in to see Station Names.</MDBCardText>
+//                           </>
+//                         )
+//                       }
+//                     })()}
+//                   </Suspense>
+//                 </MDBCardBody>
+//               </MDBCard>
+//           </div>    
+//         </div>      
+//       </Suspense>
+//     </div>
+//   );
+// }
+
+// export default Main;
 
 
 

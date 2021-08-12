@@ -16,13 +16,19 @@ import makeStyles from '@material-ui/styles/makeStyles';
 //   }
 // });
 
-export default function MapProvider({ children }) {
+export default function MoistureProvider({ children }) {
   const [map, setMap] = useState()
   const [windowHeight, setWindowHeight] = useState(window.innerHeight-55)
   const [dataPoints, setDataPoints] = useState()
   const [selection, setSelection] = useState()
   const [displayFuel, setDisplayFuel] = useState('All')
   const [pointLayer, setPointLayer] = useState()
+  const [selectedSites, setSelectedSites] = useState()
+  const [egbcData, setEgbcData] = useState()
+  const [wgbcData, setWgbcData] = useState()
+  const [observedData, setObservedData] = useState()
+  const [timeFilters, setTimeFilters] = useState()
+  const [fuelValFilterObj, setFuelValFilterObj] = useState()
 
   // const classes = useStyles(); // ❌ If you have this, consider moving <ThemeProvider> to HOC and wrap the App
 
@@ -38,6 +44,32 @@ export default function MapProvider({ children }) {
     }
     getPoints()
   }, [])
+
+  useEffect(() => {
+    const getEgbc = async () => {
+      // console.log('getting text data')
+      const textData = await axios.get('https://fuel-moisture.s3.us-east-2.amazonaws.com/EGBC_json.json')
+
+      console.log('textData egbc', textData)
+      setEgbcData(textData.data)
+    }
+    getEgbc()
+  }, [])
+
+  useEffect(() => {
+    const getEgbc = async () => {
+      // console.log('getting text data')
+      const textData = await axios.get('https://fuel-moisture.s3.us-east-2.amazonaws.com/WGBC_json.json')
+
+      console.log('textData egbc', textData)
+      setWgbcData(textData.data)
+    }
+    getEgbc()
+  }, [])
+
+  useEffect(() => {
+    setObservedData({...egbcData, ...wgbcData})  
+  },[egbcData, wgbcData])
 
   // useEffect(() => {
   // 	const getText = async() =>{
@@ -144,7 +176,7 @@ export default function MapProvider({ children }) {
     return () => window.removeEventListener("resize", handleResize);
   }, []); // Empty array ensures that effect is only run on mount
   return (
-    <MoistureContext.Provider value={{ map, setMap, windowHeight, dataPoints, selection, setSelection, stnFuels, displayFuel, setDisplayFuel, pointLayer, setPointLayer}}>
+    <MoistureContext.Provider value={{ map, setMap, windowHeight, dataPoints, selection, setSelection, stnFuels, displayFuel, setDisplayFuel, pointLayer, setPointLayer, selectedSites, setSelectedSites, observedData, timeFilters, setTimeFilters, fuelValFilterObj, setFuelValFilterObj}}>
           {children}
     </MoistureContext.Provider>
   );
