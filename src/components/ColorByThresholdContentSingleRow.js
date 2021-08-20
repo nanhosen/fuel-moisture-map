@@ -1,11 +1,36 @@
 import { useState, useEffect, useContext,  Suspense, lazy } from 'react';
 import TagFilter from './TagFilter'
-import {TextField, Box, Tooltip, IconButton, Switch  } from '@material-ui/core';
+import {TextField, Box, Tooltip, IconButton, Switch, FormLabel, FormControlLabel, InputAdornment   } from '@material-ui/core';
 import Autocomplete from '@material-ui/core/Autocomplete';
 import AddIcon from '@material-ui/icons/Add';
 import RemoveIcon from '@material-ui/icons/Remove';
 import { MoistureContext } from '../contexts/MoistureContext'
+import PositionedSnackbar from './FormSnackbar'
+import AlertDialog from './AlertDialog'
+// import { makeStyles } from '@material-ui/core/styles';
 
+// const useStyles = makeStyles((theme) => ({
+//   root: {
+//     display: 'flex',
+//     flexWrap: 'wrap',
+//   },
+//   textField: {
+//     marginLeft: theme.spacing(1),
+//     marginRight: theme.spacing(1),
+//     width: '25ch',
+//   },
+// }));
+ const classes = {
+ 	  root: {
+    display: 'flex',
+    flexWrap: 'wrap',
+  },
+  textField: {
+    marginLeft: '1px',
+    marginRight: '1px',
+    width: '25ch',
+  },
+ }
 
 export default function ColorByThresholdContent(props){
 
@@ -16,6 +41,7 @@ export default function ColorByThresholdContent(props){
 	const [valueArray, setValueArray] = useState([])
 	const [filterValue, setFilterValue] = useState()
 	const [selectedFuel, setSelectedFuel] = useState()
+	const [averageFuel, setAverageFuel] = useState()
 	
 
 	useEffect(() => {
@@ -41,9 +67,13 @@ export default function ColorByThresholdContent(props){
 		context.setFuelValFilterObj({[selectedFuel]:filterValue})
 	},[filterValue, selectedFuel])
 
+	useEffect(() =>{
+		context.setFuelForAverage(averageFuel)
+	},[averageFuel])
+
 	const {fuelOptionList} = props
 	const handleChange = (e, type, index)=>{
-		// console.log('i changed', type, e.target.textContent, e.target.value)
+		console.log('i changed', type, e.target.textContent, e.target.value)
 		const fuelType = e.target.textContent
 		const val = type == 'value' ? e.target.value : undefined
 		// console.log('val', val, !val)
@@ -67,6 +97,11 @@ export default function ColorByThresholdContent(props){
 				setFilterObject({})
 				setFilterArray([])
 			}
+		}
+		else if(type == 'average'){
+			const fuelTypeAvg = e.target.textContent
+			console.log('fuelTypeAvg', fuelTypeAvg)
+			setAverageFuel(fuelTypeAvg ? fuelTypeAvg : null)
 		}
 		else if(type == 'value'){
 			setFilterValue(checkNum(val) ? val : null)
@@ -92,7 +127,7 @@ export default function ColorByThresholdContent(props){
 		}
 	}
 	const changeRow = (augmentVal, type)=>{
-		console.log('i changed', augmentVal, type)
+		// console.log('i changed', augmentVal, type)
 		const newVal = numRows + augmentVal >= 1 ? numRows + augmentVal : 1
 		setNumRows(newVal)
 		if(type == 'remove'){
@@ -117,7 +152,7 @@ export default function ColorByThresholdContent(props){
 	const componentAr = []
 	let i=0
 	while(i+1<=numRows){
-		componentAr.push(<DropdownComponent changeHandler = {handleChange} rowHandler = {changeRow} optionList = {fuelOptionList} index={i} filterArray={filterArray} filterArraySetter = {setFilterArray} filterObject={filterObject} filterObjectSetter = {setFilterObject} />)
+		componentAr.push(<DropdownComponent changeHandler = {handleChange}  optionList = {fuelOptionList} index={i}  selectedFuel={selectedFuel}/>)
 		i++
 	}
 
@@ -133,10 +168,188 @@ export default function ColorByThresholdContent(props){
 
 
 function DropdownComponent(props){
-	// console.log('heree', props.optionList)
+	// console.log('heree', props)
 	const[isValDisabled, setIsValDisabled] = useState(true)
 	const changeHandler = props.changeHandler
-	const rowHandler = props.rowHandler
+	const [showInside, setShowInside] = useState(false)
+	const [showInsideAverage, setShowInsideAverage] = useState(false)
+	const [showAverage, setShowAverage] = useState(false)
+	const [showThresh, setShowThresh] = useState(false)
+	const [elementSelected, setElementSelected] = useState(null)
+	const [alertVisible, setAlertVisible] = useState(false)
+
+
+	const context = useContext(MoistureContext)
+	useEffect(()=>{
+		const isDisabled = !props.selectedFuel ? true : false
+		// console.log('isDisabled', isDisabled)
+		setIsValDisabled(isDisabled)
+	},[props.selectedFuel])
+	const handleChange = (e)=>{
+		// console.log('changed switch', e)
+		if(e == 'avg'){
+			console.log('average satte', showAverage, context)
+			if(!showAverage && context.displayFuel.length>0){
+				// console.log('I am going to remove stuff in selected fuel thing')
+				setAlertVisible(true)
+			}
+			if(showAverage){
+				console.log('i am going to remove average seelected fuel')
+				context.setFuelForAverage()
+			}
+			setShowAverage(!showAverage)
+		}
+		else{
+			setShowThresh(!showThresh)
+			if(showThresh){
+				console.log('i am remove selected thresh things')
+				context.setFuelValFilterObj({undefined:undefined})
+			}
+		}
+	}
+	useEffect(()=>{
+		if(showAverage){
+			setShowThresh(false)
+		}
+	},[showAverage])
+
+	useEffect(()=>{
+		if(showAverage){
+			context.setColorFilterType('average')
+		}
+		else{
+			context.setColorFilterType(showThresh ? 'threshold' : null)
+		}
+	},[showAverage, showThresh])
+	useEffect(()=>{
+		if(showThresh){
+			setShowAverage(false)
+			setShowInside(true)
+		}
+		else{
+			setShowInside(false)
+		}
+	},[showThresh])
+
+useEffect(()=>{
+		if(showAverage){
+			setShowThresh(false)
+			setShowInsideAverage(true)
+		}
+		else{
+			setShowInsideAverage(false)
+		}
+	},[showAverage])
+
+	const index = props.index
+	return (
+    <div className={classes.root}>
+      <div>
+      	<Box sx={{ display: 'flex', alignItems: 'flex-end', pb:'10px' }}>
+	    		<FormControlLabel  control={<Switch checked={showAverage} onChange={e=>{handleChange('avg')}} />} label="Color By Comparison To Average" />
+	    	</Box>
+       	<Box
+		      component="form"
+		      sx={{ display: 'flex', alignItems: 'flex-end', pb:'10px' }}
+		      noValidate
+		    >
+		    	{ showInsideAverage && 
+			  		<>
+			
+						  <Autocomplete
+							  disablePortal
+							  id="combo-box-demo"
+							  options={props.optionList}
+							  size="small"
+							  getOptionLabel={(option) => option.name}
+							  renderInput={(params) => <TextField {...params} label="Fuel Type" />}
+							  fullWidth = {true}
+							  onChange={(e)=>{changeHandler(e, 'average', index)}}
+							/>
+
+				  </>  
+				}
+	    </Box>
+      <Box sx={{ display: 'flex', alignItems: 'flex-end', pb:'10px' }}>
+    		<FormControlLabel control={<Switch  checked={showThresh} onChange={e=>{handleChange('thresh')}}/>} label="Color By Percent Threshold" />
+    	</Box>
+       <Box
+		      component="form"
+		      sx={{ display: 'flex', alignItems: 'flex-end', pb:'10px' }}
+		      noValidate
+		    >
+			  { showInside && 
+			  	<>
+			
+					  <Autocomplete
+						  disablePortal
+						  id="combo-box-demo"
+						  options={props.optionList}
+						  size="small"
+						  getOptionLabel={(option) => option.name}
+						  renderInput={(params) => <TextField {...params} label="Fuel Type" />}
+						  fullWidth = {true}
+						  onChange={(e)=>{changeHandler(e, 'fuel', index)}}
+						/>
+			      <TextField
+			        id="outlined-number"
+			        label="Threshold Value(%)"
+			        // helperText="enter value in percent"
+			        inputProps={{
+		            startAdornment: <InputAdornment position="end">%</InputAdornment>,
+		          }}
+			        disabled={isValDisabled}
+			          size="small"
+			          onChange={(e)=>{changeHandler(e, 'value', index)}}
+			          sx={{ml:'3px'}}
+			      />
+
+			  </>  
+			}
+
+	    </Box>
+      </div>
+    </div>
+  );
+}
+
+// function DropdownInside(props){
+// 	const inProps = props.props
+// 	return(
+// 		<>
+			
+// 			  <Autocomplete
+// 				  disablePortal
+// 				  id="combo-box-demo"
+// 				  options={props.optionList}
+// 				  size="small"
+// 				  getOptionLabel={(option) => option.name}
+// 				  renderInput={(params) => <TextField {...params} label="Fuel Type" />}
+// 				  fullWidth = {true}
+// 				  onChange={(e)=>{changeHandler(e, 'fuel', index)}}
+// 				/>
+// 	      <TextField
+// 	        id="outlined-uncontrolled"
+// 	        label="Threshold Value(%)"
+// 	        disabled={isValDisabled}
+// 	          size="small"
+// 	          onChange={(e)=>{changeHandler(e, 'value', index)}}
+// 	          sx={{ml:'3px'}}
+// 	      />
+
+// 	  </>  
+// 	)
+// }
+
+function DropdownComponentOriginal(props){
+	console.log('heree', props)
+	const[isValDisabled, setIsValDisabled] = useState(true)
+	const changeHandler = props.changeHandler
+	// const rowHandler = props.rowHandler
+	useEffect(()=>{
+		const isDisabled = !props.selectedFuel ? true : false
+		setIsValDisabled(isDisabled)
+	},[props.selectedFuel])
 	const index = props.index
 	return(
 		<>
@@ -157,8 +370,8 @@ function DropdownComponent(props){
 				/>
 	      <TextField
 	        id="outlined-uncontrolled"
-	        label="Threshold Value"
-	        disabled={false}
+	        label="Threshold Value(%)"
+	        disabled={isValDisabled}
 	          size="small"
 	          onChange={(e)=>{changeHandler(e, 'value', index)}}
 	          sx={{ml:'3px'}}

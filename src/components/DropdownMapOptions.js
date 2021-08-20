@@ -7,9 +7,10 @@ import { MoistureContext } from '../contexts/MoistureContext'
 // import Form from 'react-bootstrap/Form'
 // import { useAccordionButton } from 'react-bootstrap/AccordionButton';
 import { MDBAccordion, MDBAccordionItem } from 'mdb-react-ui-kit';
-import {Accordion, AccordionDetails, AccordionSummary, Typography, Card, CardActions, CardContent, CardMedia } from '@material-ui/core'
+import {Accordion, AccordionDetails, AccordionSummary, Typography, Card, CardActions, CardContent, CardMedia, IconButton,  } from '@material-ui/core'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
+import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 // import TextField from '@material-ui/core/TextField';
 // import Autocomplete from '@material-ui/core/Autocomplete';
 // import { styled, useTheme } from '@material-ui/core/styles';
@@ -34,6 +35,7 @@ import {stnFuels} from '../data/fuelTypes'
 import TagFilter from './TagFilter'
 import RadioArea from './RadioArea'
 import ColorByThresholdContent from './ColorByThresholdContentSingleRow'
+import Tooltip, { tooltipClasses } from '@material-ui/core/Tooltip';
 
 const stnNames = []
 for(var name in stnFuels){
@@ -132,6 +134,7 @@ const fuelTypeObjThing = fuelTypes.sort().map(currType =>{return({name:currType}
 function Example(props) {
   const [collapseId, setCollapseId] = useState()
   const [isClosed, setIsClosed] = useState(true)
+  // const []
   // const [showNav, setShowNav] = useState(false);
 
   const context = useContext(MoistureContext)
@@ -148,7 +151,8 @@ function Example(props) {
 
   useEffect(() =>{
     // console.log('collapseId', collapseId)
-  },[collapseId])
+    console.log('disoplay fuel ldngth', context.displayFuel.length)
+  },[context.displayFuel])
 
   // const toggle = useCallback(() => {
   //   // console.log('toggle')
@@ -169,9 +173,12 @@ function Example(props) {
           id={`panel${props.i}a-header`}
       >
         <Typography>Filter by Fuel Type</Typography>
+        <HelpTooltip text="Stations with the selected fuel type(s) will be displayed on map"/>
       </AccordionSummary>
       <AccordionDetails>
         <TagFilter setter={context.setDisplayFuel} label={'Fuel Type'} optionList = {fuelTypeObjThing} />
+        {context.displayFuel.length ==1 && <ColorByThresholdContent fuelOptionList = {fuelTypeObjThing}/>}
+        {context.displayFuel.length !==1 && 'stuff will be here when only one fuel type is selected'}
       </AccordionDetails> 
     </Accordion>
     <Accordion>
@@ -180,7 +187,8 @@ function Example(props) {
           aria-controls={`panel${props.i}a-content`}
           id={`panel${props.i}a-header`}
       >
-        <Typography>Filter by Station Name</Typography>
+        <Typography>Filter by Station Name </Typography>
+        <HelpTooltip text="Only selected stations will appear on map"/>
       </AccordionSummary>
       <AccordionDetails>
         <TagFilter setter={context.setSelectedSites} label={'Station Name'} optionList = {stnNames} />
@@ -193,6 +201,7 @@ function Example(props) {
           id={`panel${props.i}a-header`}
       >
         <Typography>Filter by Time</Typography>
+        <HelpTooltip text="View stations that have observations for the selected time period"/>
       </AccordionSummary>
       <AccordionDetails>
         <RadioArea />
@@ -204,7 +213,8 @@ function Example(props) {
           aria-controls={`panel${props.i}a-content`}
           id={`panel${props.i}a-header`}
       >
-        <Typography>Color Station Based on Threshold</Typography>
+        <Typography>Color Station Based on Threshold/Comparison to Normal</Typography>
+        <HelpTooltip text="Color stations based on recent observations. Any filters set above will still apply."/>
       </AccordionSummary>
       <AccordionDetails>
         <ColorByThresholdContent fuelOptionList = {fuelTypeObjThing}/>
@@ -233,6 +243,14 @@ export default function MapOptions(props){
     </Accordion>
     </>
     );
+}
+
+function HelpTooltip(props){
+  return(
+    <Tooltip title={props.text}>
+      <HelpOutlineIcon fontSize="12px" sx={{marginLeft:'3px'}}/>
+    </Tooltip> 
+  )
 }
 
 

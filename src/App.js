@@ -39,7 +39,7 @@ const theme = createTheme({
 
 function App() {
   const [width, setWidth] = useState(window.innerWidth)
-  const [height, setHeight] = useState(window.innerHeight - 160)
+  const [height, setHeight] = useState(window.innerHeight - 180)
 
   useEffect(() => {
     // console.log('height', height, width)
@@ -47,7 +47,7 @@ function App() {
 
   useEffect(() => {
     function handleResize() {
-      setHeight(window.innerHeight - 55)
+      setHeight(window.innerHeight - 180)
       setWidth(window.innerWidth)
     }
 

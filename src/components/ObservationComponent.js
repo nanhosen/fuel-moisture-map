@@ -85,7 +85,7 @@ export default function ObservationComponent(props) {
     if(stationObs){
       setLatestOb({Observation: stationObs.obs[0], Date: stationObs.obDates[0]})
     }
-    console.log('stationObs', stationObs)
+    console.log(station, fuelType, 'stationObs', stationObs)
   },[stationObs])
 
   useEffect(()=>{

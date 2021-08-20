@@ -29,6 +29,9 @@ export default function MoistureProvider({ children }) {
   const [observedData, setObservedData] = useState()
   const [timeFilters, setTimeFilters] = useState()
   const [fuelValFilterObj, setFuelValFilterObj] = useState()
+  const [colorFilterType, setColorFilterType] = useState()
+  const [allFilterStatus, setAllFilterStatus] = useState({})
+  const [fuelForAverage, setFuelForAverage] = useState()
 
   // const classes = useStyles(); // ❌ If you have this, consider moving <ThemeProvider> to HOC and wrap the App
 
@@ -176,7 +179,7 @@ export default function MoistureProvider({ children }) {
     return () => window.removeEventListener("resize", handleResize);
   }, []); // Empty array ensures that effect is only run on mount
   return (
-    <MoistureContext.Provider value={{ map, setMap, windowHeight, dataPoints, selection, setSelection, stnFuels, displayFuel, setDisplayFuel, pointLayer, setPointLayer, selectedSites, setSelectedSites, observedData, timeFilters, setTimeFilters, fuelValFilterObj, setFuelValFilterObj}}>
+    <MoistureContext.Provider value={{allFilterStatus, setAllFilterStatus, map, setMap, windowHeight, dataPoints, selection, setSelection, stnFuels, displayFuel, setDisplayFuel, pointLayer, setPointLayer, selectedSites, setSelectedSites, observedData, timeFilters, setTimeFilters, fuelValFilterObj, setFuelValFilterObj, colorFilterType, setColorFilterType, fuelForAverage, setFuelForAverage}}>
           {children}
     </MoistureContext.Provider>
   );

@@ -1,6 +1,7 @@
 import {fullSiteMetadata} from '../data/siteMetadataWithImages'
 import { Circle as CircleStyle, Fill, Stroke, Style, Icon, Text } from 'ol/style.js'
 import {dashToComma} from './stringParsingThings'
+import {checkFuelType, obsProcess, timeCheck} from './stationFilterCheckers'
 
 
 
@@ -33,7 +34,7 @@ export default function returnColor(feature, selectedFuelTypes, selectedSites, o
   // console.log('status obj heeeeeeee', statusObj)
   // var color = '#cfcfd0'
   // const currSiteFuelTypes = currSiteData?.fuels ? Object.keys(currSiteData.fuels) : null
-  const obDateInfo = {
+  const obDateInfo = { 
     fuelType: [],
     latestOb: []
   }
@@ -58,7 +59,7 @@ export default function returnColor(feature, selectedFuelTypes, selectedSites, o
             const calculatedAvg = averagesArray.reduce((a, b) => parseFloat(a) + parseFloat(b)) / averagesArray.length
             const compareToNormal = fuelObs['obs'][0] ? calculatedAvg - parseFloat(fuelObs['obs'][0]) : null
             statusObj.comparedToNormal ?  statusObj.comparedToNormal[currFuel] = compareToNormal : statusObj.comparedToNormal = {[currFuel]: compareToNormal}
-        // console.log('most recet ob',latestOb, 'avg',  calculatedAvg, fuelObs['obs'][0], compareToNormal)
+        console.log('station', currSiteName, 'most recet ob',latestOb, 'avg',  calculatedAvg, fuelObs['obs'][0], compareToNormal)
           }
         // console.log('latest and previous', latestOb, previousOb)
         obDateInfo.fuelType.push(currFuel)
@@ -78,6 +79,7 @@ export default function returnColor(feature, selectedFuelTypes, selectedSites, o
     }
     // console.log('obDateInfo', obDateInfo)
     const matches = checkIfMatches(selectedFuelTypes, currFuel)
+    // console.log('real fuel answer', matches)
 
     if(matches){
       // console.log('matches################!####################################################') 
@@ -85,6 +87,11 @@ export default function returnColor(feature, selectedFuelTypes, selectedSites, o
       statusObj.fuelType = true
     }
   })
+
+  // console.log('statusObj', statusObj)
+  // console.log('new fuel thing', obsProcess(observedData, currSiteFuelTypes))
+  // console.log('new return thing', checkFuelType(currSiteFuelTypes, selectedFuelTypes))
+  // console.log(statusObj.fuelType == checkFuelType(currSiteFuelTypes, selectedFuelTypes))
 
   if(timeFilters){
     // console.log('obby ob ehere', obDateInfo)
@@ -129,6 +136,18 @@ export default function returnColor(feature, selectedFuelTypes, selectedSites, o
     // console.log('today', today, 'oldestDate', oldestDate)
     }
     // }
+  }
+
+  // console.log('obs process resuot', obsProcess(observedData, currSiteFuelTypes))
+  const newTimeThing = timeCheck(obsProcess(observedData, currSiteFuelTypes).obDateInfo, timeFilters)
+  if(statusObj.time == newTimeThing){
+  // console.log('orig time filter ', statusObj)
+  // console.log('new gime filter', timeCheck(obsProcess(observedData, currSiteFuelTypes).obDateInfo, timeFilters))
+  // console.log('i workeddd')
+
+  }
+  else{
+    // console.log('i am lame')
   }
 
   // const hasFuel = currSiteFuelTypes ? currSiteFuelTypes.indexOf(selectedFuelTypes) : null

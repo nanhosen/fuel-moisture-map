@@ -93,13 +93,22 @@ export default function TabContent(props){
 ///////////////////////////////////////
 
 function MakeAccordionNewest(props){
+	const [expanded, setExpanded] = useState()
+
+	const handleChange = (panel) => (event, newExpanded) => {
+		// console.log('handleChange', event, panel, newExpanded)
+    setExpanded(newExpanded ? panel : false);
+  };
+  useEffect(()=>{
+  	setExpanded()
+  },[props.station])
 
 	const fuels = props && props.fuels ?  Object.keys(props.fuels) : []
 	// console.log('fuels', fuels, props.fuels)
 	const accordionInner = fuels.map((currFuel, i) => {
 		// console.log('props.fuels[currFuel]', props.fuels[currFuel])
 		return (
-		  <Accordion>
+		  <Accordion expanded={expanded === `panel${i}`} onChange={handleChange(`panel${i}`)}>
 				<AccordionSummary
 	          expandIcon={<ExpandMoreIcon />}
 	          aria-controls={`panel${props.i}a-content`}
@@ -125,6 +134,16 @@ function MakeAccordionNewest(props){
 /////////////////////////////
 function MakeAccordionNewInside(props){
 	const imageLinks = props.imageLinks
+	const [expanded, setExpanded] = useState()
+
+	const handleChange = (panel) => (event, newExpanded) => {
+		// console.log('handleChange', event, panel, newExpanded)
+    setExpanded(newExpanded ? panel : false);
+  };
+  useEffect(()=>{
+  	setExpanded()
+  },[props.station])
+
 	const innerCards = imageLinks.map((currLink, i)=>{
 		return(
 			<Card key={i}>
@@ -142,7 +161,7 @@ function MakeAccordionNewInside(props){
 	})
 	return(
 		<>
-			  <Accordion key={`1a`}>
+			  <Accordion key={`1a`} expanded={expanded === `panel1`} onChange={handleChange(`panel1`)}>
 			  	<AccordionSummary
 	          expandIcon={<ExpandMoreIcon />}
 	          aria-controls={`panel1a-content`}
@@ -155,7 +174,7 @@ function MakeAccordionNewInside(props){
 
 			    </AccordionDetails>
 			  </Accordion> 
-			  <Accordion key={`1b`}>
+			  <Accordion key={`1b`} expanded={expanded === `panel2`} onChange={handleChange(`panel2`)}>
 			  	<AccordionSummary
 	          expandIcon={<ExpandMoreIcon />}
 	          aria-controls={`panel1b-content`}

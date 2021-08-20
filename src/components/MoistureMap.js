@@ -8,11 +8,14 @@ import Map from 'ol/Map';
 import '../App.css'
 import createTextStyle from '../utils/getText'
 import returnColor from '../utils/colorBySelectedFuel'
+import returnColorNew from '../utils/colorBySelectedFuelRefactor'
 import {Box, Grid, Paper, Card, Typography, CardContent} from '@material-ui/core';
+import SvgIcon from '@material-ui/core/SvgIcon';
 
 import { MoistureContext } from '../contexts/MoistureContext'
 import { Circle as CircleStyle, Fill, Stroke, Style, Icon, Text } from 'ol/style.js'
-const icon = '../data/nodata.png'
+import * as olSize from 'ol/size';
+// const icon = require('ugh/nodata.png')
 // console.log('icon', icon)
 // const Map = lazy(() => import('ol/Map'))
 // const View = lazy(() => import('ol/View'))
@@ -24,9 +27,7 @@ var mapboxLayer = new TileLayer({
     // url: 'https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibmFuaG9zZW4iLCJhIjoiY2ppZGExdDZsMDloNzN3cGVoMjZ0NHR5YyJ9.RYsPZGmajXULk-WtqvBNpQ'
   })
 })
-
-
-function makeGeoJsonLayer(data, displayFuel, displaySites, id, observedData, stationFuels, timeFilters, valFilters) {
+function makeGeoJsonLayer(data, displayFuel, displaySites, id, observedData, stationFuels, timeFilters, valFilters, colorFilterType, activeFilters, fuelForAverage, trend) {
   // if (!data) {
   //   // console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
   // }
@@ -34,7 +35,7 @@ function makeGeoJsonLayer(data, displayFuel, displaySites, id, observedData, sta
   //   // console.log('nowImhere')
   // )
   // // console.log('data', data)g
-  console.log('makeGeoJsonLayer time', timeFilters)
+  // console.log('makeGeoJsonLayer time', timeFilters)
 
   var dataSource = new VectorSource({
     features: (new GeoJSON()).readFeatures(data, {
@@ -44,10 +45,18 @@ function makeGeoJsonLayer(data, displayFuel, displaySites, id, observedData, sta
   });
 
   const styleFunction = (feature, resolution) => {
-    const categoryColor = returnColor(feature, displayFuel, displaySites, observedData[feature.get('name')], timeFilters, valFilters)
+  // console.log('average hereeee', fuelForAverage)  
+    // const categoryColor = returnColor(feature, displayFuel, displaySites, observedData[feature.get('name')], timeFilters, valFilters, colorFilterType)
+    // const newColorThing = returnColorNew(activeFilters, feature, displayFuel, displaySites, timeFilters, valFilters, colorFilterType, observedData[feature.get('name')],fuelForAverage)
+    const categoryColor = returnColorNew(activeFilters, feature, displayFuel, displaySites, timeFilters, valFilters, colorFilterType, observedData[feature.get('name')],fuelForAverage)
+    // console.log(activeFilters, feature, displayFuel, displaySites, timeFilters, valFilters, colorFilterType, observedData[feature.get('name')],fuelForAverage)
+    // console.log('categoryColor', categoryColor)
+    // console.log('newColorThing', newColorThing)
+
+
     return new Style({
       image: new CircleStyle({
-        radius: 6,
+        radius: 10,
         fill: new Fill({
           color: categoryColor
         }),
@@ -61,12 +70,24 @@ function makeGeoJsonLayer(data, displayFuel, displaySites, id, observedData, sta
   }
 
   const styleFunctionIconMap = (feature, resolution) => {
-    const categoryColor = returnColor(feature, displayFuel, displaySites, observedData[feature.get('name')], timeFilters, valFilters)
+    const categoryColor = returnColorNew(activeFilters, feature, displayFuel, displaySites, timeFilters, valFilters, colorFilterType, observedData[feature.get('name')],fuelForAverage)
+    const svgIcon = <SvgIcon>
+             <g><rect fill="none" height="24" width="24"/></g><g><g><circle cx="12" cy="12" fill={categoryColor}  r="8"/><path fill="black" d="M12,2C6.47,2,2,6.47,2,12c0,5.53,4.47,10,10,10s10-4.47,10-10C22,6.47,17.53,2,12,2z M12,20c-4.42,0-8-3.58-8-8 c0-4.42,3.58-8,8-8s8,3.58,8,8C20,16.42,16.42,20,12,20z"/></g></g>
+
+        </SvgIcon>
+        var svgg = '<svg width="120" height="120" version="1.1" xmlns="http://www.w3.org/2000/svg">'
+    + '<circle cx="5" cy="5" r="5"/>'
+    + '</svg>';
     return new Style({
       image: new Icon(/** @type {olx.style.IconOptions} */ ({
-            anchor: [0.5, 0.5],
+            // anchor: [0.5, 0.5],
             crossOrigin: 'anonymous',
-            src: './nodata.png'
+            src: 'https://fuel-moisture.s3.us-east-2.amazonaws.com/arrow_downward_black_24dp.svg',
+            // src: 'data:image/svg+xml;utf8,' + svgg,
+            color: 'black',
+            scale:0.6,
+            rotation: 180,
+            opacity: 5
             // img: undefined,
             // imgSize: img ? [img.width, img.height] : undefined
           })),
@@ -80,7 +101,7 @@ function makeGeoJsonLayer(data, displayFuel, displaySites, id, observedData, sta
     minResolution: 0,
     maxResolution: 400000,
     visible: true,
-    style: styleFunction,
+    style: trend ? styleFunctionIconMap : styleFunction,
     id: id
   })
 
@@ -102,10 +123,28 @@ function MoistureMap(props){
   const mapContainer = useRef(null)
   const context = useContext(MoistureContext)
   const [timeFilterState, setTimeFilterState] = useState(context.timeFilters)
+  const [activeFilters, setActiveFilters] = useState({
+        fuelFilter: false,
+        stationNameFilter: false,
+        timeFilters: false,
+        obComparisonFilter: false
+      })
 
   useEffect(()=>{
-    // console.log('time stuff', timeFilterState, context.timeFilters)
-  },[timeFilterState, context.timeFilters])
+    const newObj = {...activeFilters}
+    const valIsSet = context.fuelValFilterObj
+    const valIsPresent = !valIsSet[Object.keys(valIsSet)] || Object.keys(valIsSet) == 'null' ? false : true
+    context.displayFuel.length > 0 ? newObj['fuelFilter'] = true : newObj['fuelFilter'] = false 
+    context.selectedSites && context.selectedSites.length > 0 ? newObj['stationNameFilter'] = true : newObj['stationNameFilter'] = false 
+    typeof context.timeFilters == 'string' ? newObj['timeFilters'] = true : newObj['timeFilters'] = false 
+    context.colorFilterType == 'threshold' && valIsPresent || context.colorFilterType == 'average' && context.fuelForAverage ? newObj['obComparisonFilter'] = true : newObj['obComparisonFilter'] = false 
+
+    setActiveFilters(newObj)  
+
+  },[context.selectedSites, context.timeFilters, context.displayFuel, context.colorFilterType, context.fuelValFilterObj, context.fuelForAverage])
+  useEffect(()=>{
+    context.setAllFilterStatus(activeFilters)
+  },[activeFilters])
 
   useEffect(()=>{
     // console.log('context', context)
@@ -116,8 +155,10 @@ function MoistureMap(props){
         alreadyThere.map(currLayer => olMap.removeLayer(currLayer))
         // console.log('layers now', olMap.getLayers())
       }
+    // console.log('averageeeeeeeee', context.fuelForAverage)
       // console.log('sending this to addlayerthing', context.dataPoints, context.displayFuel, context.selectedSites, 'fuelMoisture', context.observedData, context.stnFuels, context.timeFilters, context.fuelValFilterObj)
-      olMap.addLayer(makeGeoJsonLayer(context.dataPoints, context.displayFuel, context.selectedSites, 'fuelMoisture', context.observedData, context.stnFuels, context.timeFilters, context.fuelValFilterObj))
+      olMap.addLayer(makeGeoJsonLayer(context.dataPoints, context.displayFuel, context.selectedSites, 'fuelMoisture', context.observedData, context.stnFuels, context.timeFilters, context.fuelValFilterObj, context.colorFilterType, context.allFilterStatus, context.fuelForAverage))
+      olMap.addLayer(makeGeoJsonLayer(context.dataPoints, context.displayFuel, context.selectedSites, 'fuelMoisture', context.observedData, context.stnFuels, context.timeFilters, context.fuelValFilterObj, context.colorFilterType, context.allFilterStatus, context.fuelForAverage, 'trend'))
     }
     // const mapLayers = olMap.getLayers()?.array_
     // if(mapLayers){
@@ -129,14 +170,14 @@ function MoistureMap(props){
     // else{
     //   // console.log('no data points here')
     // }
-  }, [context.dataPoints, context.displayFuel, context.selectedSites, context.observedData, context.timeFilters, context.fuelValFilterObj])
+  }, [context.dataPoints, context.displayFuel, context.selectedSites, context.observedData, context.stnFuels, context.timeFilters, context.fuelValFilterObj, context.colorFilterType, context.allFilterStatus, context.fuelForAverage])
 
   useEffect(()=>{
     console.log('map', olMap.getLayers())
   },[olMap])
 
   useEffect(()=>{
-    // console.log('context full update', context)
+    console.log('context full update', context)
   },[context])
 
 

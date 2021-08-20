@@ -35,7 +35,7 @@
 //     -webkit-font-smoothing: antialiased;
 //     -moz-osx-font-smoothing: grayscale;
 // `
-
+import { styled, alpha } from '@material-ui/core/styles';
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import AppBar from '@material-ui/core/AppBar';
@@ -43,9 +43,17 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import useScrollTrigger from '@material-ui/core/useScrollTrigger';
-import Box from '@material-ui/core/Box';
+import {Box, IconButton, Badge, Button, ButtonGroup, Link} from '@material-ui/core';
 import Container from '@material-ui/core/Container';
 import Slide from '@material-ui/core/Slide';
+import AccountCircle from '@material-ui/icons/AccountCircle';
+import MailIcon from '@material-ui/icons/Mail';
+import NotificationsIcon from '@material-ui/icons/Notifications';
+import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
+import LinkIcon from '@material-ui/icons/Link';
+import Tooltip, { tooltipClasses } from '@material-ui/core/Tooltip';
+import { grey } from '@material-ui/core/colors';
+
 
 function HideOnScroll(props) {
   const { children, window } = props;
@@ -72,6 +80,19 @@ HideOnScroll.propTypes = {
   window: PropTypes.func,
 };
 
+
+const HtmlTooltip = styled(({ className, ...props }) => (
+  <Tooltip {...props} classes={{ popper: className }} />
+))(({ theme }) => ({
+  [`& .${tooltipClasses.tooltip}`]: {
+    backgroundColor: '#f5f5f9',
+    color: 'rgba(0, 0, 0, 0.87)',
+    maxWidth: 220,
+    fontSize: theme.typography.pxToRem(12),
+    border: '1px solid #dadde9'
+  },
+}));
+
 export default function HideAppBar(props) {
   return (
     <React.Fragment>
@@ -83,6 +104,29 @@ export default function HideAppBar(props) {
                 <Typography variant="h6" component="div">
                   Great Basin Live Fuel Moisture Viewer
                 </Typography>
+                <Box sx={{ flexGrow: 1 }} />
+                  <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+                    <HtmlTooltip
+                      title={
+                        <>
+                          <Typography color="inherit">About This Page</Typography>
+                            {"The data displayed in this viewer comes directly from the"} <a href="http://www.wfas.net/nfmd/public/index.php" target="blank"> {'National Fuel Moisture Database'} </a> {"The map view can be altered by clicking on the 'Map Options' dropdown menu"}
+                        </>
+                      }
+                    >
+                      <IconButton size="large" aria-label="show 4 new mails" color="inherit">
+                        <HelpOutlineIcon />
+                      </IconButton>
+                    </HtmlTooltip>
+                    <IconButton size="large" aria-label="show 4 new mails" color="inherit">
+                      <Tooltip title="link to National Fuel Moisture Database">
+                        <Link href="http://www.wfas.net/nfmd/public/index.php" target="blank" color={grey[50]}>
+                          <LinkIcon />
+                        </Link>  
+                      </Tooltip>  
+                    </IconButton>
+                    
+                  </Box>
               </Toolbar>
             </Box>
           </AppBar>
