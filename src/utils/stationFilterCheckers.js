@@ -55,21 +55,21 @@ export function checkStationName(selectedSites, currSitename){
 // 		}
 // }	
 
-function compareValThresh(processedObs, colorFilterType, valFilters){
+// function compareValThresh(processedObs, colorFilterType, valFilters){
 
-}
+// }
 // compareVal(processedObs, colorFilterType, valFilters)
-export function compareVal(processedObs, colorFilterType, valFilters, fuelForAverage){
-	// console.log('processedObs', processedObs, colorFilterType, valFilters, 'fuelForAverage', fuelForAverage)
+export function compareVal(processedObs, colorFilterType, threshold, fuelToCompare){
+	// console.log('processedObs', processedObs, 'colorFilterType', colorFilterType, 'threshold', threshold, 'fuelToCompare', fuelToCompare)
 	const statusObj={[colorFilterType]:null}
 	if(!processedObs.latestObObject){
 		// console.log('no obs')
 	}
 	else{
 		if(colorFilterType == "threshold"){
-			for(var fuel in valFilters){
-	      const thresh = parseFloat(valFilters[fuel])
-	      const latestOb = parseFloat(processedObs.latestObObject[fuel])
+			// for(var fuel in valFilters){
+	      const thresh = parseFloat(threshold)
+	      const latestOb = parseFloat(processedObs.latestObObject[fuelToCompare])
 	      const threshPadding = 0
 	      if(!isNaN(latestOb) && !isNaN(thresh)){
 	        if( latestOb > thresh + threshPadding){
@@ -82,13 +82,16 @@ export function compareVal(processedObs, colorFilterType, valFilters, fuelForAve
 	          statusObj[colorFilterType] = 'below'
 	        }
 	      }
-	    }
+	    // }
 
 		}
 		else if(colorFilterType == 'average'){
-			// console.log('processedObs', processedObs.comparedToNormal)
-			// console.log('obs hereee', processedObs.comparedToNormal[fuelForAverage])
-			const avgVal = processedObs.comparedToNormal[fuelForAverage]
+			// if(processedObs){
+			// // console.log('processedObs', processedObs.comparedToNormal)
+
+			// // console.log('obs hereee', processedObs.comparedToNormal[fuelToCompare])
+			// }
+			const avgVal = processedObs.comparedToNormal[fuelToCompare]
 			if(avgVal){
 				// console.log('avgVal', avgVal)
 				if(avgVal > 1){
@@ -104,8 +107,8 @@ export function compareVal(processedObs, colorFilterType, valFilters, fuelForAve
 		}
 
 	}
-	
 	// console.log('resut', statusObj)
+	
 	return statusObj
 }
 
@@ -133,7 +136,7 @@ export function obsProcess(observedData, stationFuelsArray){
 	          const latestMonth = new Date(latestObDate).getMonth() + 1
 	          const monthPart = new Date(latestObDate).getDate() < 15 ? 'first' : 'second'
 	          const averagesArray = stnFuelAverages[latestMonth][monthPart].length > 0 ? stnFuelAverages[latestMonth][monthPart] : null
-	          // console.log('averagesArray', averagesArray, 'fuelObs', fuelObs)
+	          // console.log(d'averagesArray', averagesArray, 'fuelObs', fuelObs)
 	          const calculatedAvg = averagesArray ?  averagesArray.reduce((a, b) => parseFloat(a) + parseFloat(b)) / averagesArray.length : null
 	          // const compareToNormal = fuelObs['obs'][0] ? calculatedAvg - parseFloat(fuelObs['obs'][0]) : null
 	          const compareToNormal = fuelObs['obs'][0] && averagesArray ? parseFloat(fuelObs['obs'][0]) - calculatedAvg : null

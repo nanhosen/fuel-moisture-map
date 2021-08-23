@@ -71,7 +71,7 @@ export default function ObservationComponent(props) {
     // console.log('obsCOntext', context)
     // console.log('obsCOntext', 'station', station, 'station obs', context.observedData[station], 'fuelType', dashToComma(fuelType),  'station fuel obs', context.observedData[props.station][fuelType])
     if(context.observedData[props.station][fuelType]){
-      console.log('trying commma', context.observedData[props.station][dashToComma(fuelType)])
+      // console.log('trying commma', context.observedData[props.station][dashToComma(fuelType)])
       setStationObs(context.observedData[props.station][fuelType])
     }
     else{
@@ -85,11 +85,11 @@ export default function ObservationComponent(props) {
     if(stationObs){
       setLatestOb({Observation: stationObs.obs[0], Date: stationObs.obDates[0]})
     }
-    console.log(station, fuelType, 'stationObs', stationObs)
+    // console.log(station, fuelType, 'stationObs', stationObs)
   },[stationObs])
 
   useEffect(()=>{
-    console.log('station obs', stationObs)
+    // console.log('station obs', stationObs)
   },[stationObs])
   // const {setter, label, optionList} = props
   const [selectedTime, setSelectedTime] = useState()
@@ -102,7 +102,7 @@ export default function ObservationComponent(props) {
   // useEffect(() =>{
   //   context.setTimeFilters(selectedTime)
   // },[selectedTime])
-  console.log('new station', station)
+  // console.log('new station', station)
 
 
   return (

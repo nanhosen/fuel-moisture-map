@@ -11,13 +11,13 @@ export default function RadioArea(props) {
   // const {setter, label, optionList} = props
   const [selectedTime, setSelectedTime] = useState()
   const setTime = (period) =>{
-    console.log('setTime function triggered', period)
+    // console.log('setTime function triggered', period)
     setSelectedTime(period)
   }
   // console.log('props', label)
   // const context = useContext(MoistureContext)
   useEffect(() =>{
-    console.log('set time triggere from radio area component', props)
+    // console.log('set time triggere from radio area component', props)
     context.setTimeFilters(selectedTime)
   },[selectedTime])
 

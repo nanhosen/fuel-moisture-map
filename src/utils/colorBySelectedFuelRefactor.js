@@ -11,11 +11,18 @@ import {dashToComma} from './stringParsingThings'
 import {checkFuelType, obsProcess, timeCheck, checkStationName, compareVal} from './stationFilterCheckers'
 
 // returnColorNew(activeFilters, feature, displayFuel, displaySites, timeFilters, valFilters, colorFilterType, observedData[feature.get('name')])
-export default function returnColorNew(allFilterStatus, feature, selectedFuelArray, displaySites, timeFilters, valFilters, colorFilterType, observedData,  fuelForAverage){
+// olMap.addLayer(makeGeoJsonLayer(context.dataPoints, context.displayFuel, context.selectedSites, 'fuelMoisture', context.observedData, context.stnFuels, context.timeFilters, context.fuelValFilterObj, context.colorFilterType, context.allFilterStatus, context.fuelForAverage))
+               // makeGeoJsonLayer(        data,               displayFuel,         displaySites,   id,                    observedData,          stationFuels,    timeFilters,         valFilters,               colorFilterType,         activeFilters,           fuelForAverage, trend) {
+               	// returnColorNew(        activeFilters,   feature, displayFuel,       displaySites, timeFilters, valFilters, colorFilterType, observedData[feature.get('name')],fuelForAverage)
+export default function returnColorNew(returnType, allFilterStatus, feature, selectedFuelArray, displaySites, timeFilters, valFilters, colorFilterType, observedData,  fuelForAverage, threshold){
+		// console.log('returnType', returnType, 'allFilterStatus', allFilterStatus, 'feature', feature, 'selectedFuelArray', selectedFuelArray, 'displaySites', displaySites, 'timeFilters', timeFilters, 'valFilters', valFilters, 'colorFilterType', colorFilterType, 'observedData', observedData,  'fuelForAverage', fuelForAverage, threshold)
 	// console.log('this fuel for average', fuelForAverage)
 	// console.log(activeFilters, feature, displayFuel, displaySites, timeFilters, valFilters, colorFilterType, observedData[feature.get('name')],fuelForAverage)
 	// console.log('inputs', allFilterStatus, feature, displayFuel, displaySites, timeFilters, valFilters, colorFilterType, observedData)
 	// console.log('timeFilters', timeFilters)
+	// console.log('allFilterStatus', allFilterStatus)
+	const selectedFuel = selectedFuelArray && selectedFuelArray.length == 1 ? selectedFuelArray[0] : null
+	// console.log('selectedFuel', selectedFuel)
 	const currSiteName = feature.get('name')
 	const currSiteData = fullSiteMetadata[currSiteName]
 	const currSiteFuelTypes = currSiteData?.fuels ? Object.keys(currSiteData.fuels) : []
@@ -25,7 +32,7 @@ export default function returnColorNew(allFilterStatus, feature, selectedFuelArr
 		fuelFilter:checkFuelType(currSiteFuelTypes, selectedFuelArray),
 		stationNameFilter:checkStationName(displaySites, currSiteName),
 		timeFilters:timeCheck(processedObs.obDateInfo, timeFilters), 
-		obComparisonFilter: compareVal(processedObs, colorFilterType, valFilters, fuelForAverage)
+		obComparisonFilter: compareVal(processedObs, colorFilterType, threshold, selectedFuel)
 	}
 
 	const activeFilters = []
@@ -36,12 +43,27 @@ export default function returnColorNew(allFilterStatus, feature, selectedFuelArr
 			functionStatusObj[filterName]=processInfoObj[filterName]
 		}
 	}
-	// console.log('functionStatusObj', functionStatusObj)
+
+	const trendObj = {trend:false}
+	if(processedObs['latesObTrend']){
+		if( processedObs['latesObTrend'][selectedFuel] > 0){
+			trendObj.trend = 'up'
+		}
+		else if( processedObs['latesObTrend'][selectedFuel] == 0){
+			trendObj.trend='flat'
+		}
+		else if( processedObs['latesObTrend'][selectedFuel] <0){
+			trendObj.trend='down'
+		}
+
+	// console.log('processedObs', processedObs['latesObTrend'][selectedFuel])
+	}
 	// console.log('active filters', activeFilters)
 
 	const colorObj = {color: '#5F6A6A'}
 	var hasFalse = false
 	activeFilters.map(currFilter=>{
+		// console.log('currFilter', currFilter, 'functionStatusObj', functionStatusObj, 'this', functionStatusObj[currFilter])
 		if(!functionStatusObj[currFilter]){
 				hasFalse = true
 			}
@@ -61,7 +83,7 @@ export default function returnColorNew(allFilterStatus, feature, selectedFuelArr
 		// colorObj.color = '#cfcfd0'
 	}
 
-	return colorObj.color
+	return returnType == 'color' ? colorObj.color : trendObj.trend
 
 }
 // function getManyColors(hasThresh, activeFilters, functionStatusObj){
@@ -83,7 +105,7 @@ export default function returnColorNew(allFilterStatus, feature, selectedFuelArr
 // 	return colorObj.color
 // }
 // var color = meetsFilters ? '#454446' : '#cfcfd0'
-
+// 
 function getManyColors(status, type){
 	// console.log('status', status, 'type', type)
 	const colorObj={
@@ -98,10 +120,10 @@ function getManyColors(status, type){
 			below:'#27AE60',
 		}
 	}
-	// console.log('color', colorObj[type][status])
+	// console.log('color', 'type', type, 'status', status, 'colorObj', colorObj)
  return colorObj[type][status] 
 }
-
+// 
 function getManyColorsAverage(status){
 	// console.log('status', status)
 	const colorObj={

@@ -3,11 +3,12 @@
 import React, {  useEffect, useState,  useContext } from 'react';
 // import Accordion from 'react-bootstrap/Accordion'
 import { MoistureContext } from '../contexts/MoistureContext'
+
 // import Card from 'react-bootstrap/Card'
 // import Form from 'react-bootstrap/Form'
 // import { useAccordionButton } from 'react-bootstrap/AccordionButton';
 import { MDBAccordion, MDBAccordionItem } from 'mdb-react-ui-kit';
-import {Accordion, AccordionDetails, AccordionSummary, Typography, Card, CardActions, CardContent, CardMedia, IconButton,  } from '@material-ui/core'
+import {Accordion, AccordionDetails, AccordionSummary, Typography, Card, CardActions, CardContent, CardMedia, IconButton, Alert } from '@material-ui/core'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
@@ -34,7 +35,7 @@ import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import {stnFuels} from '../data/fuelTypes'
 import TagFilter from './TagFilter'
 import RadioArea from './RadioArea'
-import ColorByThresholdContent from './ColorByThresholdContentSingleRow'
+import ColorByThresholdContent from './ColorByThresholdContentNewAreaVersion'
 import Tooltip, { tooltipClasses } from '@material-ui/core/Tooltip';
 
 const stnNames = []
@@ -149,10 +150,7 @@ function Example(props) {
      )
   },[isClosed])
 
-  useEffect(() =>{
-    // console.log('collapseId', collapseId)
-    console.log('disoplay fuel ldngth', context.displayFuel.length)
-  },[context.displayFuel])
+
 
   // const toggle = useCallback(() => {
   //   // console.log('toggle')
@@ -178,7 +176,7 @@ function Example(props) {
       <AccordionDetails>
         <TagFilter setter={context.setDisplayFuel} label={'Fuel Type'} optionList = {fuelTypeObjThing} />
         {context.displayFuel.length ==1 && <ColorByThresholdContent fuelOptionList = {fuelTypeObjThing}/>}
-        {context.displayFuel.length !==1 && 'stuff will be here when only one fuel type is selected'}
+        {context.displayFuel.length !==1 && <AlertArea />}
       </AccordionDetails> 
     </Accordion>
     <Accordion>
@@ -205,19 +203,6 @@ function Example(props) {
       </AccordionSummary>
       <AccordionDetails>
         <RadioArea />
-      </AccordionDetails> 
-    </Accordion>
-    <Accordion>
-      <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls={`panel${props.i}a-content`}
-          id={`panel${props.i}a-header`}
-      >
-        <Typography>Color Station Based on Threshold/Comparison to Normal</Typography>
-        <HelpTooltip text="Color stations based on recent observations. Any filters set above will still apply."/>
-      </AccordionSummary>
-      <AccordionDetails>
-        <ColorByThresholdContent fuelOptionList = {fuelTypeObjThing}/>
       </AccordionDetails> 
     </Accordion>
 
@@ -253,6 +238,13 @@ function HelpTooltip(props){
   )
 }
 
+function AlertArea(props){
+  return(
+    <Alert variant="outlined" severity="info" sx={{marginTop:'10px'}}>
+      When only one station is selected, options will appear to view trend arrows and color stations based on a comparison to average. 
+    </Alert>
+  )
+}
 
     // <MDBAccordion flush >
     //   <MDBAccordionItem collapseId='flush-collapse1' headerTitle='Filter by Fuel Type' className="mt-0 mb-0">

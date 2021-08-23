@@ -73,7 +73,7 @@ function Main(props) {
                 <MapOptions />
 
                 <MoistureMap height={windowHeight}  width={props.width} className="h-100"></MoistureMap>
-                {context.fuelValFilterObj && <Box sx={{position:'relative', bottom:'0px'}}><Legend  /></Box>}
+                {context.colorFilterType && <Box sx={{position:'relative', bottom:'0px'}}><Legend  /></Box>}
                 
                 {/*</MDBCardBody>*/}
               </Paper>

@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext,  Suspense, lazy } from 'react';
 import TagFilter from './TagFilter'
-import {TextField, Box, Tooltip, IconButton, Switch, FormLabel, FormControlLabel, InputAdornment   } from '@material-ui/core';
+import {TextField, Box, Tooltip, IconButton, Switch, FormLabel, FormControlLabel, InputAdornment, Stack   } from '@material-ui/core';
 import Autocomplete from '@material-ui/core/Autocomplete';
 import AddIcon from '@material-ui/icons/Add';
 import RemoveIcon from '@material-ui/icons/Remove';
@@ -44,34 +44,35 @@ export default function ColorByThresholdContent(props){
 	const [averageFuel, setAverageFuel] = useState()
 	
 
-	useEffect(() => {
-		// console.log('filterObject', filterObject)
-		// context.setFuelValFilterObj(filterObject)
-	},[filterObject])
+	// useEffect(() => {
+	// 	// console.log('filterObject', filterObject)
+	// 	// context.setFuelValFilterObj(filterObject)
+	// },[filterObject])
 
-	useEffect(() => {
-		// console.log('filterArray changed', filterArray)
-	},[filterArray])
+	// useEffect(() => {
+	// 	// console.log('filterArray changed', filterArray)
+	// },[filterArray])
 
-	useEffect(() => {
-		// console.log('numRows', numRows)
-	},[numRows])
+	// useEffect(() => {
+	// 	// console.log('numRows', numRows)
+	// },[numRows])
 
-	
+	// useEffect(()=>{
+	// 	// console.log('context chagned', context)
+	// },[context])
 
-	useEffect(()=>{
-		const newFuel = selectedFuel == undefined ? null : selectedFuel
-		// console.log('testObj', {[selectedFuel]:filterValue}, 'newFuel', newFuel)
-		context.setFuelValFilterObj({[selectedFuel]:filterValue})
-	},[filterValue, selectedFuel])
+	// useEffect(()=>{
+	// 	// console.log('testObj', {[selectedFuel]:filterValue}, 'newFuel', newFuel)
+	// 	context.setThreshold(filterValue)
+	// },[filterValue])
 
-	useEffect(() =>{
-		context.setFuelForAverage(averageFuel)
-	},[averageFuel])
+	// useEffect(() =>{
+	// 	context.setFuelForAverage(averageFuel)
+	// },[averageFuel])
 
 	const {fuelOptionList} = props
 	const handleChange = (e, type, index)=>{
-		console.log('i changed', type, e.target.textContent, e.target.value)
+		// console.log('i changed', type, e.target.textContent, e.target.value)
 		const fuelType = e.target.textContent
 		const val = type == 'value' ? e.target.value : undefined
 		// console.log('val', val, !val)
@@ -79,7 +80,7 @@ export default function ColorByThresholdContent(props){
 			setSelectedFuel(fuelType ? fuelType : null)
 			if(fuelType){
 				if(filterObject[fuelType]){
-					console.log('uh oh, fuel aready there')
+					// console.log('uh oh, fuel aready there')
 				}
 
 				else{
@@ -98,31 +99,31 @@ export default function ColorByThresholdContent(props){
 		}
 		else if(type == 'average'){
 			const fuelTypeAvg = e.target.textContent
-			console.log('fuelTypeAvg', fuelTypeAvg)
+			// console.log('fuelTypeAvg', fuelTypeAvg)
 			setAverageFuel(fuelTypeAvg ? fuelTypeAvg : null)
 		}
 		else if(type == 'value'){
-			setFilterValue(checkNum(val) ? val : null)
+			context.setThreshold(checkNum(val) && parseFloat(val) ? parseFloat(val) : null)
 		}
-		else if(type == 'value' && checkNum(val)){
-			const newArray = [...valueArray]
-			newArray[index] = val
-			// console.log('newArray addint go filger array', newArray)
-			setValueArray(newArray)
-			if(filterArray.length>0){
+		// else if(type == 'value' && checkNum(val)){
+		// 	const newArray = [...valueArray]
+		// 	newArray[index] = val
+		// 	// console.log('newArray addint go filger array', newArray)
+		// 	setValueArray(newArray)
+		// 	if(filterArray.length>0){
 
-				const valFuelType = filterArray[index]
-				// if(filterObject[valFuelType]){
-					// filterObject[valFuelType] = val
-					// console.log('going to be setting')
-					setFilterObject({...filterObject, [valFuelType]:val})
-				// }
-			}
-			// if(val)
-		}
-		else if(type == 'val' && !val){
-			setValueArray([])
-		}
+		// 		const valFuelType = filterArray[index]
+		// 		// if(filterObject[valFuelType]){
+		// 			// filterObject[valFuelType] = val
+		// 			// console.log('going to be setting')
+		// 			setFilterObject({...filterObject, [valFuelType]:val})
+		// 		// }
+		// 	}
+		// 	// if(val)
+		// }
+		// else if(type == 'val' && !val){
+		// 	setValueArray([])
+		// }
 	}
 	const changeRow = (augmentVal, type)=>{
 		// console.log('i changed', augmentVal, type)
@@ -176,7 +177,6 @@ function DropdownComponent(props){
 	const [elementSelected, setElementSelected] = useState(null)
 	const [alertVisible, setAlertVisible] = useState(false)
 
-
 	const context = useContext(MoistureContext)
 	useEffect(()=>{
 		const isDisabled = !props.selectedFuel ? true : false
@@ -186,127 +186,85 @@ function DropdownComponent(props){
 	const handleChange = (e)=>{
 		// console.log('changed switch', e)
 		if(e == 'avg'){
-			console.log('average satte', showAverage, context)
-			if(!showAverage && context.displayFuel.length>0){
-				// console.log('I am going to remove stuff in selected fuel thing')
-				setAlertVisible(true)
-			}
-			if(showAverage){
-				console.log('i am going to remove average seelected fuel')
-				context.setFuelForAverage()
-			}
 			setShowAverage(!showAverage)
 		}
-		else{
+		else if(e =='thresh'){
 			setShowThresh(!showThresh)
-			if(showThresh){
-				console.log('i am remove selected thresh things')
-				context.setFuelValFilterObj({undefined:undefined})
-			}
+		}
+		else if(e == 'trend'){
+			context.setShowArrows(!context.showArrows)
 		}
 	}
 	useEffect(()=>{
 		if(showAverage){
 			setShowThresh(false)
+			context.setColorFilterType('average')
+			setShowInsideAverage(true)
+		}
+		else{
+			setShowInsideAverage(false)
+			context.setColorFilterType(showThresh ? 'threshold' : null)
 		}
 	},[showAverage])
 
-	useEffect(()=>{
-		if(showAverage){
-			context.setColorFilterType('average')
-		}
-		else{
-			context.setColorFilterType(showThresh ? 'threshold' : null)
-		}
-	},[showAverage, showThresh])
-	useEffect(()=>{
+		useEffect(()=>{
 		if(showThresh){
+			context.setColorFilterType(showThresh ? 'threshold' : null)
 			setShowAverage(false)
 			setShowInside(true)
 		}
 		else{
 			setShowInside(false)
+			context.setColorFilterType(showAverage ? 'average' : null)
 		}
 	},[showThresh])
 
-useEffect(()=>{
-		if(showAverage){
-			setShowThresh(false)
-			setShowInsideAverage(true)
-		}
-		else{
-			setShowInsideAverage(false)
-		}
-	},[showAverage])
+
+
+
 
 	const index = props.index
 	return (
     <div className={classes.root}>
+    <Stack spacing={0}>
       <div>
-      	<Box sx={{ display: 'flex', alignItems: 'flex-end', pb:'10px' }}>
-	    		<FormControlLabel  control={<Switch checked={showAverage} onChange={e=>{handleChange('avg')}} />} label="Color By Comparison To Average" />
+      	<Box sx={{ display: 'flex', alignItems: 'flex-end',  }}>
+	    		<FormControlLabel  control={<Switch checked={context.showArrows} onChange={e=>{handleChange('trend')}} />} label="Show Trend Arrows" sx={{paddingBottom:'0px'}} />
 	    	</Box>
-       	<Box
-		      component="form"
-		      sx={{ display: 'flex', alignItems: 'flex-end', pb:'10px' }}
-		      noValidate
-		    >
-		    	{ showInsideAverage && 
-			  		<>
-			
-						  <Autocomplete
-							  disablePortal
-							  id="combo-box-demo"
-							  options={props.optionList}
-							  size="small"
-							  getOptionLabel={(option) => option.name}
-							  renderInput={(params) => <TextField {...params} label="Fuel Type" />}
-							  fullWidth = {true}
-							  onChange={(e)=>{changeHandler(e, 'average', index)}}
-							/>
+	    	<Box sx={{ display: 'flex', alignItems: 'flex-end',  }}>
+	    		<FormControlLabel  control={<Switch checked={showAverage} onChange={e=>{handleChange('avg')}} />} label="Color By Comparison To Average" sx={{paddingBottom:'0px'}} />
+	    	</Box>
+
+	      <Box sx={{ display: 'flex', alignItems: 'flex-end',  }}>
+	    		<FormControlLabel control={<Switch  checked={showThresh} onChange={e=>{handleChange('thresh')}}/>} label="Color By Percent Threshold" />
+	    	</Box>
+	       <Box
+			      component="form"
+			      sx={{ display: 'flex', alignItems: 'flex-end', }}
+			      noValidate
+			    >
+				  { showInside && 
+				  	<>
+				
+		
+				      <TextField
+				        id="outlined-number"
+				        label="Threshold Value(%)"
+				        // helperText="enter value in percent"
+				        inputProps={{
+			            startAdornment: <InputAdornment position="end">%</InputAdornment>,
+			          }}
+				          size="small"
+				          onChange={(e)=>{changeHandler(e, 'value', index)}}
+				          sx={{ml:'3px'}}
+				      />
 
 				  </>  
 				}
-	    </Box>
-      <Box sx={{ display: 'flex', alignItems: 'flex-end', pb:'10px' }}>
-    		<FormControlLabel control={<Switch  checked={showThresh} onChange={e=>{handleChange('thresh')}}/>} label="Color By Percent Threshold" />
-    	</Box>
-       <Box
-		      component="form"
-		      sx={{ display: 'flex', alignItems: 'flex-end', pb:'10px' }}
-		      noValidate
-		    >
-			  { showInside && 
-			  	<>
-			
-					  <Autocomplete
-						  disablePortal
-						  id="combo-box-demo"
-						  options={props.optionList}
-						  size="small"
-						  getOptionLabel={(option) => option.name}
-						  renderInput={(params) => <TextField {...params} label="Fuel Type" />}
-						  fullWidth = {true}
-						  onChange={(e)=>{changeHandler(e, 'fuel', index)}}
-						/>
-			      <TextField
-			        id="outlined-number"
-			        label="Threshold Value(%)"
-			        // helperText="enter value in percent"
-			        inputProps={{
-		            startAdornment: <InputAdornment position="end">%</InputAdornment>,
-		          }}
-			        disabled={isValDisabled}
-			          size="small"
-			          onChange={(e)=>{changeHandler(e, 'value', index)}}
-			          sx={{ml:'3px'}}
-			      />
-
-			  </>  
-			}
 
 	    </Box>
       </div>
+      </Stack>
     </div>
   );
 }

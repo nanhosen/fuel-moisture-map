@@ -27,7 +27,7 @@ var mapboxLayer = new TileLayer({
     // url: 'https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibmFuaG9zZW4iLCJhIjoiY2ppZGExdDZsMDloNzN3cGVoMjZ0NHR5YyJ9.RYsPZGmajXULk-WtqvBNpQ'
   })
 })
-function makeGeoJsonLayer(data, displayFuel, displaySites, id, observedData, stationFuels, timeFilters, valFilters, colorFilterType, activeFilters, fuelForAverage, trend) {
+function makeGeoJsonLayer(data, displayFuel, displaySites, id, observedData, stationFuels, timeFilters, valFilters, colorFilterType, activeFilters, fuelForAverage, threshold, trend) {
   // if (!data) {
   //   // console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
   // }
@@ -46,10 +46,11 @@ function makeGeoJsonLayer(data, displayFuel, displaySites, id, observedData, sta
 
   const styleFunction = (feature, resolution) => {
   // console.log('average hereeee', fuelForAverage)  
+  // console.log('observedData', observedData)
     // const categoryColor = returnColor(feature, displayFuel, displaySites, observedData[feature.get('name')], timeFilters, valFilters, colorFilterType)
     // const newColorThing = returnColorNew(activeFilters, feature, displayFuel, displaySites, timeFilters, valFilters, colorFilterType, observedData[feature.get('name')],fuelForAverage)
-    const categoryColor = returnColorNew(activeFilters, feature, displayFuel, displaySites, timeFilters, valFilters, colorFilterType, observedData[feature.get('name')],fuelForAverage)
     // console.log(activeFilters, feature, displayFuel, displaySites, timeFilters, valFilters, colorFilterType, observedData[feature.get('name')],fuelForAverage)
+    const categoryColor = returnColorNew('color', activeFilters, feature, displayFuel, displaySites, timeFilters, valFilters, colorFilterType, observedData[feature.get('name')],fuelForAverage, threshold)
     // console.log('categoryColor', categoryColor)
     // console.log('newColorThing', newColorThing)
 
@@ -70,7 +71,22 @@ function makeGeoJsonLayer(data, displayFuel, displaySites, id, observedData, sta
   }
 
   const styleFunctionIconMap = (feature, resolution) => {
-    const categoryColor = returnColorNew(activeFilters, feature, displayFuel, displaySites, timeFilters, valFilters, colorFilterType, observedData[feature.get('name')],fuelForAverage)
+    const categoryColor = returnColorNew('trend', activeFilters, feature, displayFuel, displaySites, timeFilters, valFilters, colorFilterType, observedData[feature.get('name')],fuelForAverage)
+    // console.log('dir', categoryColor)
+    var rotation = 0
+    var scale = 0.01
+    if(categoryColor == 'up'){
+      rotation = 3.1 //should be 3.1
+      scale = 0.6
+    }
+    else if(categoryColor == 'down'){
+      rotation = 0 //down i zero
+      scale = 0.6
+    }
+    else if(categoryColor == 'flat'){
+      rotation = 55 //should be 55
+      scale = 0.6
+    }
     const svgIcon = <SvgIcon>
              <g><rect fill="none" height="24" width="24"/></g><g><g><circle cx="12" cy="12" fill={categoryColor}  r="8"/><path fill="black" d="M12,2C6.47,2,2,6.47,2,12c0,5.53,4.47,10,10,10s10-4.47,10-10C22,6.47,17.53,2,12,2z M12,20c-4.42,0-8-3.58-8-8 c0-4.42,3.58-8,8-8s8,3.58,8,8C20,16.42,16.42,20,12,20z"/></g></g>
 
@@ -85,8 +101,8 @@ function makeGeoJsonLayer(data, displayFuel, displaySites, id, observedData, sta
             src: 'https://fuel-moisture.s3.us-east-2.amazonaws.com/arrow_downward_black_24dp.svg',
             // src: 'data:image/svg+xml;utf8,' + svgg,
             color: 'black',
-            scale:0.6,
-            rotation: 180,
+            scale:scale,
+            rotation: rotation,
             opacity: 5
             // img: undefined,
             // imgSize: img ? [img.width, img.height] : undefined
@@ -123,42 +139,74 @@ function MoistureMap(props){
   const mapContainer = useRef(null)
   const context = useContext(MoistureContext)
   const [timeFilterState, setTimeFilterState] = useState(context.timeFilters)
-  const [activeFilters, setActiveFilters] = useState({
-        fuelFilter: false,
-        stationNameFilter: false,
-        timeFilters: false,
-        obComparisonFilter: false
-      })
+  const [fuelForAverage, setFuelForAverage] = useState()
+  // const [activeFilters, setActiveFilters] = useState({
+  //       fuelFilter: false,
+  //       stationNameFilter: false,
+  //       timeFilters: false,
+  //       obComparisonFilter: false
+  //     })
 
   useEffect(()=>{
-    const newObj = {...activeFilters}
+    // const newObj = {...activeFilters}
+    const newObj = {...context.allFilterStatus}
     const valIsSet = context.fuelValFilterObj
-    const valIsPresent = !valIsSet[Object.keys(valIsSet)] || Object.keys(valIsSet) == 'null' ? false : true
+    // console.log('newObja', newObj, 'activeFilters', activeFilters)
+    // const valIsPresent = valIsSet && !valIsSet[Object.keys(valIsSet)] || Object.keys(valIsSet) == 'null' ? false : true
+    // console.log('context in here', context)
+    if(context.colorFilterType){
+
+              // console.log('effing color filter type', context.colorFilterType)
+    }
+    // console.log('should all be false', activeFilters, 'context.displayFuel.length', context.displayFuel.length)
+    const fuelForAverage = context.displayFuel && context.displayFuel.length == 1 ? context.displayFuel[0] : null
+    // console.log('fuelforavg', fuelForAverage, 'context.colorFilterType', context.colorFilterType, 'context.threshold', context.threshold,' !context.threshold', !context.threshold) 
+    if(fuelForAverage && context.colorFilterType == 'average'){
+      // console.log('what the fuuuuu')
+      newObj['obComparisonFilter'] = true
+    }
+    else if(context.colorFilterType == 'threshold' && context.threshold && context.displayFuel.length == 1){
+      newObj['obComparisonFilter'] = true
+    }
+    else{
+      newObj['obComparisonFilter'] = false
+    }
     context.displayFuel.length > 0 ? newObj['fuelFilter'] = true : newObj['fuelFilter'] = false 
     context.selectedSites && context.selectedSites.length > 0 ? newObj['stationNameFilter'] = true : newObj['stationNameFilter'] = false 
     typeof context.timeFilters == 'string' ? newObj['timeFilters'] = true : newObj['timeFilters'] = false 
-    context.colorFilterType == 'threshold' && valIsPresent || context.colorFilterType == 'average' && context.fuelForAverage ? newObj['obComparisonFilter'] = true : newObj['obComparisonFilter'] = false 
+    // context.colorFilterType == 'threshold' && valIsPresent || context.colorFilterType == 'average' && fuelForAverage ? newObj['obComparisonFilter'] = true : newObj['obComparisonFilter'] = false 
+    // console.log('newobjb', newObj, 'activeFilters', activeFilters)
+    // console.log('newobjb', newObj)
+    // setActiveFilters(newObj)  
+    context.setAllFilterStatus(newObj)
 
-    setActiveFilters(newObj)  
-
-  },[context.selectedSites, context.timeFilters, context.displayFuel, context.colorFilterType, context.fuelValFilterObj, context.fuelForAverage])
-  useEffect(()=>{
-    context.setAllFilterStatus(activeFilters)
-  },[activeFilters])
+  },[context.selectedSites, context.timeFilters, context.displayFuel, context.colorFilterType, context.fuelValFilterObj, context.threshold, context.fuelForAverage])
+  // useEffect(()=>{
+  //   context.setAllFilterStatus(activeFilters)
+  // },[activeFilters])
 
   useEffect(()=>{
     // console.log('context', context)
     if(context.dataPoints){
       const alreadyThere = checkForLayer(olMap, 'fuelMoisture')
+      const alreadyThere1 = checkForLayer(olMap, 'trend')
       if(alreadyThere && alreadyThere.length >0){
         // console.log('need to remove', alreadyThere)
         alreadyThere.map(currLayer => olMap.removeLayer(currLayer))
         // console.log('layers now', olMap.getLayers())
       }
+      if(alreadyThere1 && alreadyThere1.length >0){
+        // console.log('need to remove', alreadyThere1)
+        alreadyThere1.map(currLayer => olMap.removeLayer(currLayer))
+        // console.log('layers now', olMap.getLayers())
+      }
     // console.log('averageeeeeeeee', context.fuelForAverage)
       // console.log('sending this to addlayerthing', context.dataPoints, context.displayFuel, context.selectedSites, 'fuelMoisture', context.observedData, context.stnFuels, context.timeFilters, context.fuelValFilterObj)
-      olMap.addLayer(makeGeoJsonLayer(context.dataPoints, context.displayFuel, context.selectedSites, 'fuelMoisture', context.observedData, context.stnFuels, context.timeFilters, context.fuelValFilterObj, context.colorFilterType, context.allFilterStatus, context.fuelForAverage))
-      olMap.addLayer(makeGeoJsonLayer(context.dataPoints, context.displayFuel, context.selectedSites, 'fuelMoisture', context.observedData, context.stnFuels, context.timeFilters, context.fuelValFilterObj, context.colorFilterType, context.allFilterStatus, context.fuelForAverage, 'trend'))
+      olMap.addLayer(makeGeoJsonLayer(context.dataPoints, context.displayFuel, context.selectedSites, 'fuelMoisture', context.observedData, context.stnFuels, context.timeFilters, context.fuelValFilterObj, context.colorFilterType, context.allFilterStatus, fuelForAverage, context.threshold))
+      if(context.showArrows){
+
+        olMap.addLayer(makeGeoJsonLayer(context.dataPoints, context.displayFuel, context.selectedSites, 'trend', context.observedData, context.stnFuels, context.timeFilters, context.fuelValFilterObj, context.colorFilterType, context.allFilterStatus, fuelForAverage, context.threshold, 'trend'))
+      }
     }
     // const mapLayers = olMap.getLayers()?.array_
     // if(mapLayers){
@@ -170,15 +218,22 @@ function MoistureMap(props){
     // else{
     //   // console.log('no data points here')
     // }
-  }, [context.dataPoints, context.displayFuel, context.selectedSites, context.observedData, context.stnFuels, context.timeFilters, context.fuelValFilterObj, context.colorFilterType, context.allFilterStatus, context.fuelForAverage])
+  }, [context.dataPoints, context.displayFuel, context.selectedSites, context.observedData, context.stnFuels, context.timeFilters, context.fuelValFilterObj, context.colorFilterType, context.allFilterStatus, context.fuelForAverage, context.threshold, context.showArrows])
 
   useEffect(()=>{
-    console.log('map', olMap.getLayers())
+    // console.log('map', olMap.getLayers())
   },[olMap])
 
   useEffect(()=>{
-    console.log('context full update', context)
+    // console.log('context full update', context)
   },[context])
+
+  useEffect(()=>{
+
+    if(context.displayFuel.length !== 1){
+      context.setColorFilterType(undefined)
+    }
+  },[context.displayFuel])
 
 
   useEffect(() => {

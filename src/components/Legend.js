@@ -51,7 +51,7 @@ export default function Legend(){
   const [filterInfo, setFilterInfo] = useState(filterItems['none'])
 
   useEffect(() =>{
-    console.log('legendContext', context)
+    // console.log('legendContext', context)
   },[context])
   useEffect(() =>{
     if(context.colorFilterType){
