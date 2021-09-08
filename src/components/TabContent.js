@@ -1,19 +1,19 @@
 import { useState, useEffect, useContext,  Suspense, lazy } from 'react';
-import {imageLinks} from '../data/stationImages'
+// import {imageLinks} from '../data/stationImages'
 import {siteMetadata} from '../data/siteMetadata'
 import {fullSiteMetadata} from '../data/siteMetadataWithImages'
 // import CardColumns from 'react-bootstrap/CardColumns'
 // import Card from 'react-bootstrap/Card'
 // import Accordion from 'react-bootstrap/Accordion'
-import {Accordion, AccordionDetails, AccordionSummary, Typography, Card, CardActions, CardContent, CardMedia } from '@material-ui/core'
+import { Accordion, AccordionDetails, AccordionSummary, Typography, Card, CardMedia, Button, Box } from '@material-ui/core'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 // import ListGroup from 'react-bootstrap/ListGroup'
 // import Button from 'react-bootstrap/Button'
 // import { MDBBtn } from 'mdb-react-ui-kit';
-import {Button, Box} from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 // import { MoistureContext } from '../contexts/MoistureContext'
 import { MoistureContext } from '../contexts/MoistureContext'
+import { spaceToPercent } from '../utils/stringParsingThings';
 // const MoistureContext = lazy(() => import('../contexts/MoistureContext'))
 const ObservationComponent = lazy(() => import('./ObservationComponent'))
 
@@ -50,14 +50,14 @@ export default function TabContent(props){
 
    useEffect(() =>{
    	if(props.station && context.stnFuels){
-   		// console.log(context.stnFuels[props.station])
+   		console.log('thesefueld', context.stnFuels[props.station])
    		if(context.stnFuels[props.station]){
    			setFuels(context.stnFuels[props.station])
    		}
-   		if(imageLinks[props.station]){
-   			// console.log(imageLinks[props.station])
-   			setHasImages(true)
-   		}
+   		// if(imageLinks[props.station]){
+   		// 	// console.log(imageLinks[props.station])
+   		// 	setHasImages(true)
+   		// }
    	}
    },[props, context.stnFuels]) 
 
@@ -78,7 +78,7 @@ export default function TabContent(props){
 					</Box>
 				}		
 				{
-					fullSiteMetadata[props.station] && <MakeAccordionNewest station={props.station} fuels={fullSiteMetadata[props.station].fuels} />
+					fullSiteMetadata[props.station] && <MakeAccordionNewest station={props.station} fuels={fuels} />
 				}
 			</Suspense>	
 		</>
@@ -103,8 +103,8 @@ function MakeAccordionNewest(props){
   	setExpanded()
   },[props.station])
 
-	const fuels = props && props.fuels ?  Object.keys(props.fuels) : []
-	// console.log('fuels', fuels, props.fuels)
+	const fuels = props && props.fuels ?  props.fuels : []
+	console.log('fuels', fuels, props.fuels)
 	const accordionInner = fuels.map((currFuel, i) => {
 		// console.log('props.fuels[currFuel]', props.fuels[currFuel])
 		return (
@@ -117,7 +117,7 @@ function MakeAccordionNewest(props){
 	      	<Typography>{currFuel}</Typography>
 	      </AccordionSummary>
 	      <AccordionDetails>
-					<MakeAccordionNewInside fuelType={currFuel} station ={props.station} imageLinks={props.fuels[currFuel].imageLinks}/>
+					<MakeAccordionNewInside fuelType={currFuel} station ={props.station} imageLinks={'props.fuels[currFuel].imageLinks'}/>
 				</AccordionDetails>	
 			</Accordion>
 		)
@@ -132,63 +132,126 @@ function MakeAccordionNewest(props){
 //////////////////////////////////
 	// inner
 /////////////////////////////
-function MakeAccordionNewInside(props){
+function MakeAccordionNewInside(props) {
+	const [expanded, setExpanded] = useState()
+	const {station, fuelType} = props
+
+	const imageUrls = [`http://www.wfas.net/nfmd/graphs/img_${spaceToPercent(station)}_${spaceToPercent(fuelType)}_bimonthly.png`]
+
+	const handleChange = (panel) => (event, newExpanded) => {
+		// console.log('handleChange', event, panel, newExpanded)
+		setExpanded(newExpanded ? panel : false);
+	};
+	useEffect(() => {
+		setExpanded()
+	}, [props.station])
+
+	const innerCards = imageUrls.map((currLink, i) => {
+		return (
+			<Card key={i}>
+				<a href={currLink} target="blank">
+					<CardMedia
+						component="img"
+						alt="NFMD Chart"
+						image={currLink}
+						title="NFMD Chart"
+					/>
+				</a>
+			</Card>
+			// <Card.Img variant="top" src={`http://www.wfas.net/nfmd/graphs/${currLink}`} />
+		)
+	})
+	return (
+		<>
+			<Accordion key={`1a`} expanded={expanded === `panel1`} onChange={handleChange(`panel1`)}>
+				<AccordionSummary
+					expandIcon={<ExpandMoreIcon />}
+					aria-controls={`panel1a-content`}
+					id={`panel1a-header`}
+				>
+					<Typography>Observations</Typography>
+				</AccordionSummary>
+				<AccordionDetails>
+					<ObservationComponent station={props.station} fuelType={props.fuelType} />
+
+				</AccordionDetails>
+			</Accordion>
+			<Accordion key={`1b`} expanded={expanded === `panel2`} onChange={handleChange(`panel2`)}>
+				<AccordionSummary
+					expandIcon={<ExpandMoreIcon />}
+					aria-controls={`panel1b-content`}
+					id={`panel1b-header`}
+				>
+					<Typography>Charts</Typography>
+				</AccordionSummary>
+				<AccordionDetails>
+					{/*Site Fuels: { fuels && fuels.toString().replace(/,/g, ', ')}*/}
+					{innerCards}
+
+				</AccordionDetails>
+			</Accordion>
+		</>
+
+	)
+}
+
+function MakeAccordionNewInsideHardCodedImageLinks(props) {
 	const imageLinks = props.imageLinks
 	const [expanded, setExpanded] = useState()
 
 	const handleChange = (panel) => (event, newExpanded) => {
 		// console.log('handleChange', event, panel, newExpanded)
-    setExpanded(newExpanded ? panel : false);
-  };
-  useEffect(()=>{
-  	setExpanded()
-  },[props.station])
+		setExpanded(newExpanded ? panel : false);
+	};
+	useEffect(() => {
+		setExpanded()
+	}, [props.station])
 
-	const innerCards = imageLinks.map((currLink, i)=>{
-		return(
+	const innerCards = imageLinks.map((currLink, i) => {
+		return (
 			<Card key={i}>
 				<a href={`http://www.wfas.net/nfmd/graphs/${currLink}`} target="blank">
 					<CardMedia
-		        component="img"
-		        alt="NFMD Chart"
-		        image={`http://www.wfas.net/nfmd/graphs/${currLink}`}
-		        title="NFMD Chart"
-		      />
-	      </a>
-		  </Card>
-		    // <Card.Img variant="top" src={`http://www.wfas.net/nfmd/graphs/${currLink}`} />
+						component="img"
+						alt="NFMD Chart"
+						image={`http://www.wfas.net/nfmd/graphs/${currLink}`}
+						title="NFMD Chart"
+					/>
+				</a>
+			</Card>
+			// <Card.Img variant="top" src={`http://www.wfas.net/nfmd/graphs/${currLink}`} />
 		)
 	})
-	return(
+	return (
 		<>
-			  <Accordion key={`1a`} expanded={expanded === `panel1`} onChange={handleChange(`panel1`)}>
-			  	<AccordionSummary
-	          expandIcon={<ExpandMoreIcon />}
-	          aria-controls={`panel1a-content`}
-	          id={`panel1a-header`}
-	        >
-			    	<Typography>Observations</Typography>
-			    </AccordionSummary>	
-			    <AccordionDetails>
-				    <ObservationComponent station={props.station} fuelType={props.fuelType}/>
+			<Accordion key={`1a`} expanded={expanded === `panel1`} onChange={handleChange(`panel1`)}>
+				<AccordionSummary
+					expandIcon={<ExpandMoreIcon />}
+					aria-controls={`panel1a-content`}
+					id={`panel1a-header`}
+				>
+					<Typography>Observations</Typography>
+				</AccordionSummary>
+				<AccordionDetails>
+					<ObservationComponent station={props.station} fuelType={props.fuelType} />
 
-			    </AccordionDetails>
-			  </Accordion> 
-			  <Accordion key={`1b`} expanded={expanded === `panel2`} onChange={handleChange(`panel2`)}>
-			  	<AccordionSummary
-	          expandIcon={<ExpandMoreIcon />}
-	          aria-controls={`panel1b-content`}
-	          id={`panel1b-header`}
-	        >
-			    	<Typography>Charts</Typography>
-			    </AccordionSummary>	
-			    <AccordionDetails>
-			    {/*Site Fuels: { fuels && fuels.toString().replace(/,/g, ', ')}*/}
-			     {innerCards}
+				</AccordionDetails>
+			</Accordion>
+			<Accordion key={`1b`} expanded={expanded === `panel2`} onChange={handleChange(`panel2`)}>
+				<AccordionSummary
+					expandIcon={<ExpandMoreIcon />}
+					aria-controls={`panel1b-content`}
+					id={`panel1b-header`}
+				>
+					<Typography>Charts</Typography>
+				</AccordionSummary>
+				<AccordionDetails>
+					{/*Site Fuels: { fuels && fuels.toString().replace(/,/g, ', ')}*/}
+					{innerCards}
 
-			    </AccordionDetails>
-			  </Accordion> 
-		  </>
+				</AccordionDetails>
+			</Accordion>
+		</>
 
 	)
 }

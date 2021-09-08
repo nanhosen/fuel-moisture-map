@@ -1,9 +1,6 @@
-import { useState, useEffect, useContext,  Suspense, lazy } from 'react';
-import TagFilter from './TagFilter'
-import {TextField, Box, Tooltip, IconButton} from '@material-ui/core';
+import { useState, useEffect, useContext } from 'react';
+import {TextField, Box} from '@material-ui/core';
 import Autocomplete from '@material-ui/core/Autocomplete';
-import AddIcon from '@material-ui/icons/Add';
-import RemoveIcon from '@material-ui/icons/Remove';
 import { MoistureContext } from '../contexts/MoistureContext'
 
 

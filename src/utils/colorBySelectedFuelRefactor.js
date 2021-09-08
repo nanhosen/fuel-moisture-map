@@ -47,13 +47,13 @@ export default function returnColorNew(returnType, allFilterStatus, feature, sel
 	const trendObj = {trend:false}
 	if(processedObs['latesObTrend']){
 		if( processedObs['latesObTrend'][selectedFuel] > 0){
-			trendObj.trend = 'up'
+			trendObj.trend = 'down'
 		}
 		else if( processedObs['latesObTrend'][selectedFuel] == 0){
 			trendObj.trend='flat'
 		}
 		else if( processedObs['latesObTrend'][selectedFuel] <0){
-			trendObj.trend='down'
+			trendObj.trend='up'
 		}
 
 	// console.log('processedObs', processedObs['latesObTrend'][selectedFuel])

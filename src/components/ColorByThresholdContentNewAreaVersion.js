@@ -1,25 +1,8 @@
-import { useState, useEffect, useContext,  Suspense, lazy } from 'react';
-import TagFilter from './TagFilter'
-import {TextField, Box, Tooltip, IconButton, Switch, FormLabel, FormControlLabel, InputAdornment, Stack   } from '@material-ui/core';
+import { useState, useEffect, useContext } from 'react';
+import {TextField, Box, Switch, FormControlLabel, InputAdornment, Stack   } from '@material-ui/core';
 import Autocomplete from '@material-ui/core/Autocomplete';
-import AddIcon from '@material-ui/icons/Add';
-import RemoveIcon from '@material-ui/icons/Remove';
 import { MoistureContext } from '../contexts/MoistureContext'
-import PositionedSnackbar from './FormSnackbar'
-import AlertDialog from './AlertDialog'
-// import { makeStyles } from '@material-ui/core/styles';
 
-// const useStyles = makeStyles((theme) => ({
-//   root: {
-//     display: 'flex',
-//     flexWrap: 'wrap',
-//   },
-//   textField: {
-//     marginLeft: theme.spacing(1),
-//     marginRight: theme.spacing(1),
-//     width: '25ch',
-//   },
-// }));
  const classes = {
  	  root: {
     display: 'flex',
@@ -38,8 +21,6 @@ export default function ColorByThresholdContent(props){
 	const[filterObject, setFilterObject] = useState({})
 	const [filterArray, setFilterArray] = useState([])
 	const [numRows, setNumRows] = useState(1)
-	const [valueArray, setValueArray] = useState([])
-	const [filterValue, setFilterValue] = useState()
 	const [selectedFuel, setSelectedFuel] = useState()
 	const [averageFuel, setAverageFuel] = useState()
 	
@@ -125,29 +106,7 @@ export default function ColorByThresholdContent(props){
 		// 	setValueArray([])
 		// }
 	}
-	const changeRow = (augmentVal, type)=>{
-		// console.log('i changed', augmentVal, type)
-		const newVal = numRows + augmentVal >= 1 ? numRows + augmentVal : 1
-		setNumRows(newVal)
-		if(type == 'remove'){
-			
-			// console.log('delete type', augmentVal, numRows, type, filterObject, filterArray)
-			const fuelTypeToDelete = numRows > 1 ? filterArray[newVal] : null
-				// console.log('delte this fuel type', fuelTypeToDelete)
 
-			if(fuelTypeToDelete){
-				const newFilterObj = {...filterObject}
-				// console.log('delte this fuel type', fuelTypeToDelete, 'newFilterObj', newFilterObj)
-				delete newFilterObj[fuelTypeToDelete]
-				// console.log('newFilterObj del', newFilterObj)
-				setFilterObject(newFilterObj)
-				const newFilterArray = [...filterArray]
-				// console.log('setting FIlter Array', filterArray, newFilterArray)
-				setFilterArray(removeItemOnce(newFilterArray, fuelTypeToDelete))
-			}
-
-		}
-	}
 	const componentAr = []
 	let i=0
 	while(i+1<=numRows){
@@ -168,21 +127,15 @@ export default function ColorByThresholdContent(props){
 
 function DropdownComponent(props){
 	// console.log('heree', props)
-	const[isValDisabled, setIsValDisabled] = useState(true)
 	const changeHandler = props.changeHandler
 	const [showInside, setShowInside] = useState(false)
-	const [showInsideAverage, setShowInsideAverage] = useState(false)
 	const [showAverage, setShowAverage] = useState(false)
 	const [showThresh, setShowThresh] = useState(false)
 	const [elementSelected, setElementSelected] = useState(null)
 	const [alertVisible, setAlertVisible] = useState(false)
 
 	const context = useContext(MoistureContext)
-	useEffect(()=>{
-		const isDisabled = !props.selectedFuel ? true : false
-		// console.log('isDisabled', isDisabled)
-		setIsValDisabled(isDisabled)
-	},[props.selectedFuel])
+
 	const handleChange = (e)=>{
 		// console.log('changed switch', e)
 		if(e == 'avg'){
@@ -197,12 +150,11 @@ function DropdownComponent(props){
 	}
 	useEffect(()=>{
 		if(showAverage){
-			setShowThresh(false)
+			// setShowThresh(false)
 			context.setColorFilterType('average')
-			setShowInsideAverage(true)
 		}
 		else{
-			setShowInsideAverage(false)
+			// setShowInsideAverage(false)
 			context.setColorFilterType(showThresh ? 'threshold' : null)
 		}
 	},[showAverage])

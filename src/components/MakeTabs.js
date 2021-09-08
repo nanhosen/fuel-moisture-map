@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import TabContent from './TabContent'
-import {Tabs, Tab, Box, Typography, Paper} from '@material-ui/core';
+import {Tabs, Tab, Box} from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles'
-import { orange } from '@material-ui/core/colors';
 
 // const theme = createTheme({
 //   palette: {

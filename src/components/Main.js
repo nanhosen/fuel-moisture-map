@@ -1,4 +1,4 @@
-import { Suspense, lazy, useRef,  useState, useContext, useEffect } from 'react';
+import { Suspense, lazy, useRef,   useContext, useEffect } from 'react';
 // import Card from 'react-bootstrap/Card'
 // import Tabs from 'react-bootstrap/Tabs'
 // import Tab from 'react-bootstrap/Tab'
@@ -10,14 +10,12 @@ import '../App.css'
 import { MoistureContext } from '../contexts/MoistureContext'
 import MapOptions from './DropdownMapOptions'
 import Legend from './Legend'
-import { MDBRow, MDBCol, MDBCard, MDBCardBody,  MDBCardText, MDBContainer } from "mdb-react-ui-kit";
 import {Box, Grid, Paper, Card, Typography, CardContent} from '@material-ui/core';
 // import MoistureMap from './MoistureMap.js'
 // import Drawer from '@material-ui/core/Drawer';
 // import Button from '@material-ui/core/Button';
 // import Slide from '@material-ui/core/Slide';
 // import { styled, useTheme } from '@material-ui/core/styles';
-const Container = lazy(() => import('react-bootstrap/Container'))
 // const Nav = lazy(() => import('react-bootstrap/Nav'))
 const InfoComponent = lazy(()=>import('./InfoComponent'))
 const MoistureMap = lazy(() => import('./MoistureMap'))

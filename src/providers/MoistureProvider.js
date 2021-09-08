@@ -4,9 +4,6 @@ import React, { useState, useEffect } from 'react'
 import { MoistureContext } from '../contexts/MoistureContext'
 import axios from 'axios'
 import {stnFuels} from '../data/fuelTypes'
-import { ThemeProvider, StyledEngineProvider, createTheme } from '@material-ui/core/styles';
-
-import makeStyles from '@material-ui/styles/makeStyles';
 
 // const theme = createTheme();
 

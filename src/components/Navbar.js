@@ -35,7 +35,7 @@
 //     -webkit-font-smoothing: antialiased;
 //     -moz-osx-font-smoothing: grayscale;
 // `
-import { styled, alpha } from '@material-ui/core/styles';
+import { styled } from '@material-ui/core/styles';
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import AppBar from '@material-ui/core/AppBar';
@@ -43,12 +43,8 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import useScrollTrigger from '@material-ui/core/useScrollTrigger';
-import {Box, IconButton, Badge, Button, ButtonGroup, Link} from '@material-ui/core';
-import Container from '@material-ui/core/Container';
+import {Box, IconButton,Link} from '@material-ui/core';
 import Slide from '@material-ui/core/Slide';
-import AccountCircle from '@material-ui/icons/AccountCircle';
-import MailIcon from '@material-ui/icons/Mail';
-import NotificationsIcon from '@material-ui/icons/Notifications';
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import LinkIcon from '@material-ui/icons/Link';
 import Tooltip, { tooltipClasses } from '@material-ui/core/Tooltip';

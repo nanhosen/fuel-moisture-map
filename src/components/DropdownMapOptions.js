@@ -7,8 +7,7 @@ import { MoistureContext } from '../contexts/MoistureContext'
 // import Card from 'react-bootstrap/Card'
 // import Form from 'react-bootstrap/Form'
 // import { useAccordionButton } from 'react-bootstrap/AccordionButton';
-import { MDBAccordion, MDBAccordionItem } from 'mdb-react-ui-kit';
-import {Accordion, AccordionDetails, AccordionSummary, Typography, Card, CardActions, CardContent, CardMedia, IconButton, Alert } from '@material-ui/core'
+import {Accordion, AccordionDetails, AccordionSummary, Typography, Alert } from '@material-ui/core'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
@@ -36,7 +35,7 @@ import {stnFuels} from '../data/fuelTypes'
 import TagFilter from './TagFilter'
 import RadioArea from './RadioArea'
 import ColorByThresholdContent from './ColorByThresholdContentNewAreaVersion'
-import Tooltip, { tooltipClasses } from '@material-ui/core/Tooltip';
+import Tooltip from '@material-ui/core/Tooltip';
 
 const stnNames = []
 for(var name in stnFuels){

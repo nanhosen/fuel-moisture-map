@@ -61,15 +61,15 @@ function App() {
   return (
     <div className="h-100 App" style={{ width: '100%', height: '100%', backgroundColor:'#F5F5F5' }}>
       <Suspense fallback={<div>Loading...</div>}>
-        <MoistureProvider>
-        <ThemeProvider theme={theme}>
           {/*<Container fluid>*/}
           <Container maxWidth={false}>
             <Navbar />
+        <MoistureProvider>
+        <ThemeProvider theme={theme}>
             <Box sx={{pt:'10px'}}><Main height = {height} width={width}/></Box>
-          </Container>
         </ThemeProvider>
         </MoistureProvider>
+          </Container>
       </Suspense>
     </div>
   );

@@ -1,8 +1,6 @@
-import React, { Suspense, lazy, useRef, useEffect, useState, useCallback, useContext, forwardRef } from 'react';
-import Chip from '@material-ui/core/Chip';
+import React, {useEffect, useState} from 'react';
 import Autocomplete from '@material-ui/core/Autocomplete';
 import TextField from '@material-ui/core/TextField';
-import Stack from '@material-ui/core/Stack';
 
 
 export default function Tags(props) {

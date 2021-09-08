@@ -1,4 +1,4 @@
-import { Suspense, lazy, useRef, useEffect, useContext, useState } from 'react';
+import { useRef, useEffect, useContext, useState } from 'react';
 import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer.js'
 import XYZ from 'ol/source/XYZ'
 import VectorSource from 'ol/source/Vector.js'
@@ -7,14 +7,11 @@ import View from 'ol/View';
 import Map from 'ol/Map';
 import '../App.css'
 import createTextStyle from '../utils/getText'
-import returnColor from '../utils/colorBySelectedFuel'
 import returnColorNew from '../utils/colorBySelectedFuelRefactor'
-import {Box, Grid, Paper, Card, Typography, CardContent} from '@material-ui/core';
 import SvgIcon from '@material-ui/core/SvgIcon';
 
 import { MoistureContext } from '../contexts/MoistureContext'
 import { Circle as CircleStyle, Fill, Stroke, Style, Icon, Text } from 'ol/style.js'
-import * as olSize from 'ol/size';
 // const icon = require('ugh/nodata.png')
 // console.log('icon', icon)
 // const Map = lazy(() => import('ol/Map'))
@@ -192,6 +189,7 @@ function MoistureMap(props){
       const alreadyThere1 = checkForLayer(olMap, 'trend')
       if(alreadyThere && alreadyThere.length >0){
         // console.log('need to remove', alreadyThere)
+        console.log('removing layer')
         alreadyThere.map(currLayer => olMap.removeLayer(currLayer))
         // console.log('layers now', olMap.getLayers())
       }
@@ -202,6 +200,7 @@ function MoistureMap(props){
       }
     // console.log('averageeeeeeeee', context.fuelForAverage)
       // console.log('sending this to addlayerthing', context.dataPoints, context.displayFuel, context.selectedSites, 'fuelMoisture', context.observedData, context.stnFuels, context.timeFilters, context.fuelValFilterObj)
+      console.log('doing add layer')
       olMap.addLayer(makeGeoJsonLayer(context.dataPoints, context.displayFuel, context.selectedSites, 'fuelMoisture', context.observedData, context.stnFuels, context.timeFilters, context.fuelValFilterObj, context.colorFilterType, context.allFilterStatus, fuelForAverage, context.threshold))
       if(context.showArrows){
 
@@ -225,7 +224,7 @@ function MoistureMap(props){
   },[olMap])
 
   useEffect(()=>{
-    // console.log('context full update', context)
+    console.log('context full update', context)
   },[context])
 
   useEffect(()=>{
@@ -269,8 +268,8 @@ function MoistureMap(props){
 
 export default MoistureMap
 
-function checkForLayer(olMap, id){
-  const mapLayers = olMap.getLayers()?.array_
+function checkForLayer(currMap, id){
+  const mapLayers = currMap.getLayers()?.array_
   var matchingLayers
     if(mapLayers){
       matchingLayers = mapLayers.filter(currLayer => currLayer?.values_.id == id )

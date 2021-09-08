@@ -135,7 +135,8 @@ export function obsProcess(observedData, stationFuelsArray){
 	        if(latestObDate){
 	          const latestMonth = new Date(latestObDate).getMonth() + 1
 	          const monthPart = new Date(latestObDate).getDate() < 15 ? 'first' : 'second'
-	          const averagesArray = stnFuelAverages[latestMonth][monthPart].length > 0 ? stnFuelAverages[latestMonth][monthPart] : null
+	          console.log('stnFuelAverages', stnFuelAverages, 'latestMonth', latestMonth)
+	          const averagesArray = stnFuelAverages[latestMonth] && stnFuelAverages[latestMonth][monthPart].length > 0 ? stnFuelAverages[latestMonth][monthPart] : null
 	          // console.log(d'averagesArray', averagesArray, 'fuelObs', fuelObs)
 	          const calculatedAvg = averagesArray ?  averagesArray.reduce((a, b) => parseFloat(a) + parseFloat(b)) / averagesArray.length : null
 	          // const compareToNormal = fuelObs['obs'][0] ? calculatedAvg - parseFloat(fuelObs['obs'][0]) : null
